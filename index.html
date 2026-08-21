@@ -411,7 +411,7 @@
           </div>
           <div class="item">
             <h3 style="margin-top:0;">📝 お届け先情報</h3>
-            <!-- ★ご要望の通り、担当者名とお電話番号に変更したで！★ -->
+            <!-- ★ご要望の通り、担当者名とお電話番号に変更済み！★ -->
             <input type="text" id="name" class="form-input" placeholder="担当者のお名前" oninput="saveData()">
             <input type="tel" id="phone" class="form-input" placeholder="お電話番号" oninput="saveData()">
             <input type="text" id="address" class="form-input" placeholder="お届け先 ご住所 or ○○王国会館など" oninput="saveData()">
@@ -452,7 +452,7 @@
   </div>
 
   <script>
-    // ★新しいGASのURLバッチリ更新済み！★
+    // ★GASのURLバッチリ更新済み！★
     const gasUrl = "https://script.google.com/macros/s/AKfycbxKk-TAicQL732TdjcvxQ3Otwat_D_dqZJWAtxwSMDkUhka1pCctD-nWhXtodRe1hj3Dw/exec"; 
 
     let cart = {}; 
@@ -650,8 +650,8 @@
 
     function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
 
-
-function executeOrder() {
+    // ★今回の最重要ポイント！会衆名を裏でGASに送る魔法を組み込んだで！★
+    function executeOrder() {
       let name = document.getElementById('name').value;
       let phone = document.getElementById('phone').value;
       let address = document.getElementById('address').value;
@@ -659,10 +659,10 @@ function executeOrder() {
       
       let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
       
-      // ★ここを追加！ログインした時の「会衆名」を思い出してもらう★
+      // ★ログインした時の「会衆名」を思い出してもらう★
       let kaishu = localStorage.getItem('rescueKaishuName') || "";
       
-      // ★ここも変更！kaishuName も一緒にGASへ手紙で送るで！★
+      // ★kaishuName も一緒にGASへ手紙で送る！★
       let data = { action: "order", name: name, phone: phone, address: address, items: itemsText, comment: comment, kaishuName: kaishu };
 
       closeConfirm(); showToast("送信中です…少々お待ちください。");
