@@ -5,72 +5,91 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>救援物資 依頼フォーム</title>
   <style>
-    /* ★変更：スマホの時は左右の余白を10pxにして、画面を広く使うで！★ */
     body { font-family: sans-serif; padding: 10px; padding-bottom: 90px; background-color: #f4f7f6; color: #333; margin: 0; }
-    h2 { text-align: center; margin-bottom: 20px; font-size: 22px; }
+    h2 { text-align: center; margin-bottom: 15px; font-size: 20px; }
     
-    /* ★追加：ダブルタップで「ニュン」って拡大されるのを防ぐ魔法！★ */
     button, input { touch-action: manipulation; }
 
-    /* ログイン画面のデザイン */
     #login-screen { max-width: 400px; margin: 80px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
     #login-screen h3 { margin-top: 0; color: #2196f3; }
     .error-msg { color: #f44336; font-size: 14px; margin-top: 10px; display: none; }
     #main-app { display: none; }
 
-    .shop-layout { display: flex; flex-direction: column; gap: 15px; max-width: 1000px; margin: 0 auto; }
-    .sidebar { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .sidebar h3 { margin-top: 0; }
-    .category-btn { background: #2196f3; color: white; border: none; padding: 12px; margin-bottom: 8px; width: 100%; border-radius: 8px; font-size: 15px; cursor: pointer; text-align: left; }
-    .main-content { flex: 1; }
+    /* ★変更：スマホでも常に横並び（row）にする魔法★ */
+    .shop-layout { display: flex; flex-direction: row; gap: 8px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
+    
+    /* ★変更：スマホ用のコンパクトな左メニュー★ */
+    .sidebar { width: 85px; flex-shrink: 0; background: #fff; padding: 10px 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 10px; max-height: 85vh; overflow-y: auto; }
+    .sidebar h3 { margin-top: 0; font-size: 12px; text-align: center; margin-bottom: 10px; }
+    
+    .sidebar-user-box { background: #e3f2fd; padding: 8px 2px; border-radius: 5px; margin-bottom: 10px; text-align: center; font-weight: bold; color: #1976d2; font-size: 10px; }
+    #display-kaishu-name { display: block; margin-top: 3px; font-size: 11px; word-break: break-all; }
 
-    /* パソコン（画面が広い時）だけの魔法 */
-    @media (min-width: 768px) {
-      body { padding: 20px; padding-bottom: 80px; } /* パソコンの時は余白を広くする */
-      .shop-layout { flex-direction: row; gap: 20px; }
-      .sidebar { width: 220px; position: sticky; top: 20px; align-self: flex-start; max-height: 90vh; overflow-y: auto; }
-    }
-
+    .category-btn { color: white; border: none; padding: 12px 2px; margin-bottom: 8px; width: 100%; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.2; }
+    
+    .main-content { flex: 1; min-width: 0; }
     .page { display: none; }
     .active { display: block; }
-    .item { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .item h4 { margin-top: 0; margin-bottom: 10px; color: #333; font-size: 16px; }
     
-    /* ★追加：入力欄を選択した時に勝手にズームしないように、文字サイズを16pxに固定★ */
+    /* スマホ用のコンパクトな商品表示 */
+    .item { background: #fff; padding: 10px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .item h4 { margin-top: 0; margin-bottom: 8px; color: #333; font-size: 14px; line-height: 1.4; }
+    
     .form-input { padding: 10px; margin-top: 5px; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-    
-    .add-btn { background: #ff9800; color: #fff; border: none; border-radius: 5px; padding: 12px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; }
-    .submit-btn { background: #4caf50; color: #fff; border: none; border-radius: 5px; padding: 15px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 15px; }
+    .add-btn { background: #ff9800; color: #fff; border: none; border-radius: 5px; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px; }
+    .submit-btn { background: #4caf50; color: #fff; border: none; border-radius: 5px; padding: 15px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 15px; }
 
     .quantity-box { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-    .quantity-box button { width: 44px; height: 44px; font-size: 24px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer; }
-    .quantity-box input { width: 60px; height: 44px; text-align: center; font-size: 18px; margin: 0 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .quantity-box button { width: 36px; height: 36px; font-size: 20px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer; }
+    .quantity-box input { width: 45px; height: 36px; text-align: center; font-size: 16px; margin: 0 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
 
     #cart-list { list-style: none; padding: 0; margin: 0; }
-    .cart-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #eee; }
-    .cart-item-name { font-size: 15px; font-weight: bold; }
-    .cart-action-box { display: flex; align-items: center; }
-    .cart-action-box button { width: 36px; height: 36px; font-size: 18px; margin: 0 5px; border: none; border-radius: 4px; cursor: pointer; background: #e0e0e0; }
-    .cart-action-box .cart-item-qty { width: 30px; text-align: center; font-weight: bold; }
-    .cart-action-box .delete-btn { background: transparent; } 
+    .cart-item { display: flex; flex-direction: column; background: #f9f9f9; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #eee; }
+    .cart-item-name { font-size: 14px; font-weight: bold; margin-bottom: 8px; }
+    .cart-action-box { display: flex; align-items: center; justify-content: flex-end; }
+    .cart-action-box button { width: 32px; height: 32px; font-size: 16px; margin: 0 4px; border: none; border-radius: 4px; cursor: pointer; background: #e0e0e0; }
+    .cart-action-box .cart-item-qty { width: 25px; text-align: center; font-weight: bold; font-size: 14px; }
+    .cart-action-box .delete-btn { background: transparent; font-size: 18px; } 
 
-    .floating-cart { position: fixed; bottom: 20px; right: 20px; background: #e91e63; color: white; padding: 15px 20px; border-radius: 50px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; z-index: 1000; }
-    #toast { visibility: hidden; min-width: 250px; background-color: #323232; color: #fff; text-align: center; border-radius: 30px; padding: 12px 20px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 16px; font-weight: bold; opacity: 0; transition: opacity 0.4s, bottom 0.4s; }
-    #toast.show { visibility: visible; opacity: 1; bottom: 90px; }
+    .floating-cart { position: fixed; bottom: 20px; right: 20px; background: #e91e63; color: white; padding: 12px 18px; border-radius: 50px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; z-index: 1000; }
+    #toast { visibility: hidden; min-width: 200px; background-color: #323232; color: #fff; text-align: center; border-radius: 30px; padding: 10px 15px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: bold; opacity: 0; transition: opacity 0.4s, bottom 0.4s; }
+    #toast.show { visibility: visible; opacity: 1; bottom: 80px; }
 
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
-    .modal-content { background: #fff; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto; }
-    .modal-content h3 { margin-top: 0; text-align: center; color: #e91e63; }
-    .confirm-details { background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px; font-size: 15px; line-height: 1.6; }
-    .modal-btns { display: flex; gap: 10px; }
-    .modal-btns button { flex: 1; padding: 12px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .modal-content { background: #fff; padding: 15px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto; }
+    .modal-content h3 { margin-top: 0; text-align: center; color: #e91e63; font-size: 18px; }
+    .confirm-details { background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px; line-height: 1.5; }
+    .modal-btns { display: flex; gap: 8px; }
+    .modal-btns button { flex: 1; padding: 10px; font-size: 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
     .btn-cancel { background: #9e9e9e; color: #fff; }
     .btn-send { background: #4caf50; color: #fff; }
-    .back-btn { background: #9e9e9e; color: white; border: none; padding: 10px; margin-bottom: 15px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 16px; }
+    .back-btn { background: #9e9e9e; color: white; border: none; padding: 10px; margin-bottom: 12px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 14px; font-weight: bold; }
 
-    .history-card { border-left: 5px solid #4caf50; background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .history-date { font-size: 14px; color: #666; margin-bottom: 5px; }
-    .history-items { font-weight: bold; color: #333; line-height: 1.5; }
+    .history-card { border-left: 5px solid #4caf50; background: #fff; padding: 12px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 14px; }
+    .history-date { font-size: 12px; color: #666; margin-bottom: 4px; }
+    .history-items { font-weight: bold; color: #333; line-height: 1.4; }
+
+    /* ★パソコン用の広い画面の時は、ゆったりサイズに戻すで！★ */
+    @media (min-width: 768px) {
+      body { padding: 20px; padding-bottom: 80px; }
+      h2 { font-size: 24px; margin-bottom: 20px; }
+      .shop-layout { gap: 20px; }
+      .sidebar { width: 220px; padding: 15px; top: 20px; max-height: 90vh; }
+      .sidebar h3 { font-size: 18px; text-align: left; }
+      .sidebar-user-box { padding: 10px; font-size: 14px; }
+      #display-kaishu-name { display: inline; font-size: 16px; margin-top: 0; }
+      .category-btn { padding: 12px; font-size: 15px; text-align: left; border-radius: 8px; margin-bottom: 10px; }
+      .item { padding: 15px; }
+      .item h4 { font-size: 18px; }
+      .add-btn { padding: 12px; font-size: 16px; }
+      .quantity-box button { width: 44px; height: 44px; font-size: 24px; }
+      .quantity-box input { width: 60px; height: 44px; font-size: 18px; margin: 0 10px; }
+      .cart-item { flex-direction: row; }
+      .cart-item-name { font-size: 16px; margin-bottom: 0; }
+      .cart-action-box button { width: 36px; height: 36px; font-size: 18px; margin: 0 5px; }
+      .cart-action-box .cart-item-qty { width: 30px; font-size: 16px; }
+      .floating-cart { font-size: 18px; padding: 15px 20px; }
+    }
   </style>
 </head>
 <body>
@@ -91,8 +110,8 @@
       
       <!-- サイドバー -->
       <div class="sidebar">
-        <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-weight: bold; color: #1976d2;">
-          👤 <span id="display-kaishu-name">ゲスト</span> さん
+        <div class="sidebar-user-box">
+          👤<span id="display-kaishu-name">ゲスト</span>
         </div>
 
         <h3>🔍 カテゴリ</h3>
@@ -106,8 +125,8 @@
         <button class="category-btn" style="background: #0277bd;" onclick="showPage('kitchen-page')">🥢 キッチン</button>
         
         <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-        <button class="category-btn" style="background: #e91e63;" onclick="showPage('cart-page')">🛒 カートを見る</button>
-        <button class="category-btn" style="background: #9e9e9e;" onclick="fetchHistory()">📜 注文履歴</button>
+        <button class="category-btn" style="background: #e91e63;" onclick="showPage('cart-page')">🛒 カート</button>
+        <button class="category-btn" style="background: #9e9e9e;" onclick="fetchHistory()">📜 履歴</button>
       </div>
 
       <!-- メインコンテンツ -->
@@ -115,269 +134,261 @@
         
         <div id="top-page" class="page active">
           <div class="item">
-            <h3>いらっしゃいませ！</h3>
-            <p>左のメニューから、必要な物資のカテゴリを選んでな！</p>
+            <h3 style="margin-top:0; font-size: 16px;">いらっしゃいませ！</h3>
+            <p style="font-size: 14px;">左のメニューから必要な物資のカテゴリを選んでな！</p>
           </div>
         </div>
 
         <!-- 🧃 飲料ページ -->
         <div id="drink-page" class="page">
-          <h3>🧃 飲料</h3>
           <div class="item">
             <h4>水2L(6本入り) - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink1', -1)">-</button><input type="number" id="qty-drink1" value="1" min="1"><button onclick="changeQty('qty-drink1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('水2L(6本入り)', 'qty-drink1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('水2L(6本入り)', 'qty-drink1')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>水500ml(24本入り) - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink2', -1)">-</button><input type="number" id="qty-drink2" value="1" min="1"><button onclick="changeQty('qty-drink2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('水500ml(24本入り)', 'qty-drink2')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('水500ml(24本入り)', 'qty-drink2')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>お茶2L(6本入り) - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink3', -1)">-</button><input type="number" id="qty-drink3" value="1" min="1"><button onclick="changeQty('qty-drink3', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('お茶2L(6本入り)', 'qty-drink3')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('お茶2L(6本入り)', 'qty-drink3')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>お茶500ml(24本入り) - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink4', -1)">-</button><input type="number" id="qty-drink4" value="1" min="1"><button onclick="changeQty('qty-drink4', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('お茶500ml(24本入り)', 'qty-drink4')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('お茶500ml(24本入り)', 'qty-drink4')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>スポドリ2L - 本</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink5', -1)">-</button><input type="number" id="qty-drink5" value="1" min="1"><button onclick="changeQty('qty-drink5', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('スポドリ2L', 'qty-drink5')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('スポドリ2L', 'qty-drink5')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>スポドリ500ml - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink6', -1)">-</button><input type="number" id="qty-drink6" value="1" min="1"><button onclick="changeQty('qty-drink6', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('スポドリ500ml', 'qty-drink6')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('スポドリ500ml', 'qty-drink6')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>ジュース500ml - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink7', -1)">-</button><input type="number" id="qty-drink7" value="1" min="1"><button onclick="changeQty('qty-drink7', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('ジュース500ml', 'qty-drink7')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('ジュース500ml', 'qty-drink7')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>炭酸飲料 500ml - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink8', -1)">-</button><input type="number" id="qty-drink8" value="1" min="1"><button onclick="changeQty('qty-drink8', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('炭酸飲料500ml', 'qty-drink8')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('炭酸飲料500ml', 'qty-drink8')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>コーヒー飲料500ml〜1L - 本</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink9', -1)">-</button><input type="number" id="qty-drink9" value="1" min="1"><button onclick="changeQty('qty-drink9', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('コーヒー飲料500ml〜1L', 'qty-drink9')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('コーヒー飲料500ml〜1L', 'qty-drink9')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>紅茶500ml - 本</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink10', -1)">-</button><input type="number" id="qty-drink10" value="1" min="1"><button onclick="changeQty('qty-drink10', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('紅茶500ml', 'qty-drink10')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('紅茶500ml', 'qty-drink10')">追加 ＋</button>
           </div>
           <div class="item">
-            <h4>野菜ジュース(12個入りパック) - パック</h4>
+            <h4>野菜ジュース(12個入り) - パック</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink11', -1)">-</button><input type="number" id="qty-drink11" value="1" min="1"><button onclick="changeQty('qty-drink11', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('野菜ジュース(12個入り)', 'qty-drink11')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('野菜ジュース(12個入り)', 'qty-drink11')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>果物ジュース - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink12', -1)">-</button><input type="number" id="qty-drink12" value="1" min="1"><button onclick="changeQty('qty-drink12', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('果物ジュース', 'qty-drink12')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('果物ジュース', 'qty-drink12')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🍚 お米ページ -->
         <div id="rice-page" class="page">
-          <h3>🍚 お米</h3>
           <div class="item">
             <h4>米 5kg - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice1', -1)">-</button><input type="number" id="qty-rice1" value="1" min="1"><button onclick="changeQty('qty-rice1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('米 5kg', 'qty-rice1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('米 5kg', 'qty-rice1')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>米 3kg - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice2', -1)">-</button><input type="number" id="qty-rice2" value="1" min="1"><button onclick="changeQty('qty-rice2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('米 3kg', 'qty-rice2')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('米 3kg', 'qty-rice2')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>米 2kg - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice3', -1)">-</button><input type="number" id="qty-rice3" value="1" min="1"><button onclick="changeQty('qty-rice3', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('米 2kg', 'qty-rice3')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('米 2kg', 'qty-rice3')">追加 ＋</button>
           </div>
           <div class="item">
-            <h4>パックごはん(電子レンジ) - 個</h4>
+            <h4>パックごはん - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice4', -1)">-</button><input type="number" id="qty-rice4" value="1" min="1"><button onclick="changeQty('qty-rice4', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('パックごはん', 'qty-rice4')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('パックごはん', 'qty-rice4')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🍛 レトルトページ -->
         <div id="retort-page" class="page">
-          <h3>🍛 レトルト</h3>
           <div class="item">
-            <h4>レンジ対応品(カレー・親子丼など) - 個</h4>
+            <h4>レンジ対応品(カレーなど) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-retort1', -1)">-</button><input type="number" id="qty-retort1" value="1" min="1"><button onclick="changeQty('qty-retort1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('レンジ対応品', 'qty-retort1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('レンジ対応品', 'qty-retort1')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>味噌汁(食数で入力) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-retort2', -1)">-</button><input type="number" id="qty-retort2" value="1" min="1"><button onclick="changeQty('qty-retort2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('味噌汁', 'qty-retort2')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('味噌汁', 'qty-retort2')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🥫 パウチページ -->
         <div id="pouch-page" class="page">
-          <h3>🥫 パウチ</h3>
           <div class="item">
             <h4>魚パウチ・肉パウチ - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-pouch1', -1)">-</button><input type="number" id="qty-pouch1" value="1" min="1"><button onclick="changeQty('qty-pouch1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('魚・肉パウチ', 'qty-pouch1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('魚・肉パウチ', 'qty-pouch1')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>フルーツパウチ - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-pouch2', -1)">-</button><input type="number" id="qty-pouch2" value="1" min="1"><button onclick="changeQty('qty-pouch2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('フルーツパウチ', 'qty-pouch2')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('フルーツパウチ', 'qty-pouch2')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🍜 麺類ページ -->
         <div id="noodle-page" class="page">
-          <h3>🍜 麺類</h3>
           <div class="item">
             <h4>カップ麺 - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-noodle1', -1)">-</button><input type="number" id="qty-noodle1" value="1" min="1"><button onclick="changeQty('qty-noodle1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('カップ麺', 'qty-noodle1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('カップ麺', 'qty-noodle1')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🍪 おやつページ -->
         <div id="snack-page" class="page">
-          <h3>🍪 おやつ</h3>
           <div class="item">
             <h4>塩系(煎餅、ポテチなど) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-snack1', -1)">-</button><input type="number" id="qty-snack1" value="1" min="1"><button onclick="changeQty('qty-snack1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('おやつ(塩系)', 'qty-snack1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('おやつ(塩系)', 'qty-snack1')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>甘い系(飴、クッキーなど) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-snack2', -1)">-</button><input type="number" id="qty-snack2" value="1" min="1"><button onclick="changeQty('qty-snack2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('おやつ(甘い系)', 'qty-snack2')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('おやつ(甘い系)', 'qty-snack2')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🧻 日用品ページ -->
         <div id="daily-page" class="page">
-          <h3>🧻 日用品</h3>
           <div class="item">
-            <h4>トイレットペーパー12個入り - 袋</h4>
+            <h4>トイレットペーパー12個入 - 袋</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-daily1', -1)">-</button><input type="number" id="qty-daily1" value="1" min="1"><button onclick="changeQty('qty-daily1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('トイレットペーパー', 'qty-daily1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('トイレットペーパー', 'qty-daily1')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🥢 キッチンページ -->
         <div id="kitchen-page" class="page">
-          <h3>🥢 キッチン</h3>
           <div class="item">
             <h4>割り箸 - 本数</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit1', -1)">-</button><input type="number" id="qty-kit1" value="1" min="1"><button onclick="changeQty('qty-kit1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('割り箸', 'qty-kit1')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('割り箸', 'qty-kit1')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>使い捨て紙皿 - 枚数</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit2', -1)">-</button><input type="number" id="qty-kit2" value="1" min="1"><button onclick="changeQty('qty-kit2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('使い捨て紙皿', 'qty-kit2')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('使い捨て紙皿', 'qty-kit2')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>使い捨て紙コップ(冷) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit3', -1)">-</button><input type="number" id="qty-kit3" value="1" min="1"><button onclick="changeQty('qty-kit3', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('紙コップ(冷)', 'qty-kit3')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('紙コップ(冷)', 'qty-kit3')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>使い捨て紙コップ(温) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit4', -1)">-</button><input type="number" id="qty-kit4" value="1" min="1"><button onclick="changeQty('qty-kit4', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('紙コップ(温)', 'qty-kit4')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('紙コップ(温)', 'qty-kit4')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>使い捨てスプーン - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit5', -1)">-</button><input type="number" id="qty-kit5" value="1" min="1"><button onclick="changeQty('qty-kit5', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('使い捨てスプーン', 'qty-kit5')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('使い捨てスプーン', 'qty-kit5')">追加 ＋</button>
           </div>
           <div class="item">
             <h4>使い捨てフォーク - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit6', -1)">-</button><input type="number" id="qty-kit6" value="1" min="1"><button onclick="changeQty('qty-kit6', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('使い捨てフォーク', 'qty-kit6')">カートに追加 ＋</button>
+            <button class="add-btn" onclick="addCart('使い捨てフォーク', 'qty-kit6')">追加 ＋</button>
           </div>
         </div>
 
         <!-- 🛒 カートページ -->
         <div id="cart-page" class="page">
           <div class="item">
-            <h3>🛒 カートの中身</h3>
+            <h3 style="margin-top:0;">🛒 カートの中身</h3>
             <ul id="cart-list"></ul>
           </div>
           <div class="item">
-            <h3>📝 お届け先情報</h3>
+            <h3 style="margin-top:0;">📝 お届け先情報</h3>
             <input type="text" id="name" class="form-input" placeholder="お名前・団体名" oninput="saveData()">
             <input type="text" id="address" class="form-input" placeholder="お届け先の住所" oninput="saveData()">
             <button class="submit-btn" onclick="showConfirm()">依頼を確認する 📝</button>
@@ -386,9 +397,8 @@
 
         <!-- 📜 履歴ページ -->
         <div id="history-page" class="page">
-          <button class="back-btn" onclick="showPage('top-page')">⬅️ トップに戻る</button>
           <div class="item">
-            <h3 style="color: #4caf50;">📜 過去の注文履歴</h3>
+            <h3 style="color: #4caf50; margin-top:0;">📜 過去の注文履歴</h3>
             <div id="history-loading" style="text-align: center; color: #2196f3; padding: 20px; display: none;">
               履歴を探してるで…ちょっと待ってな！🔍
             </div>
@@ -415,7 +425,6 @@
   </div>
 
   <script>
-    // ★ゆうさんのGASのURL、そのまま入ってるで！★
     const gasUrl = "https://script.google.com/macros/s/AKfycbwqZhq4-esewChKgYfZHC2QDPZvWMccGC-5gkGXkGreRxzWfqPvE3j2fYSranl6ELFZOQ/exec"; 
 
     let cart = {}; 
@@ -486,7 +495,7 @@
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
-      window.scrollTo(0, 0); // ページ切り替え時に一番上にスクロールする魔法も足しといたで！
+      window.scrollTo(0, 0); 
     }
 
     function changeQty(inputId, amount) {
