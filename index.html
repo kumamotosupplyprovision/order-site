@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -94,7 +95,8 @@
   <div id="login-screen">
     <h3>🔒 ログイン</h3>
     <p style="font-size: 14px; color: #666;">会衆ごとのIDとパスワードを入力してください。</p>
-    <input type="text" id="site-id" class="form-input" placeholder="ユーザーID (例: sakuragi08)">
+    <!-- ★架空のID（sample01）に変更したで！★ -->
+    <input type="text" id="site-id" class="form-input" placeholder="ユーザーID (例: sample01)">
     <input type="password" id="site-password" class="form-input" placeholder="パスワード">
     <button class="submit-btn" style="background: #2196f3; margin-top: 15px;" onclick="checkPassword()">ログイン</button>
     <p id="login-error" class="error-msg">IDまたはパスワードが間違っています。</p>
@@ -411,7 +413,6 @@
           </div>
           <div class="item">
             <h3 style="margin-top:0;">📝 お届け先情報</h3>
-            <!-- ★ご要望の通り、担当者名とお電話番号に変更済み！★ -->
             <input type="text" id="name" class="form-input" placeholder="担当者のお名前" oninput="saveData()">
             <input type="tel" id="phone" class="form-input" placeholder="お電話番号" oninput="saveData()">
             <input type="text" id="address" class="form-input" placeholder="お届け先 ご住所 or ○○王国会館など" oninput="saveData()">
@@ -452,8 +453,8 @@
   </div>
 
   <script>
-    // ★GASのURLバッチリ更新済み！★
-    const gasUrl = "https://script.google.com/macros/s/AKfycbxKk-TAicQL732TdjcvxQ3Otwat_D_dqZJWAtxwSMDkUhka1pCctD-nWhXtodRe1hj3Dw/exec"; 
+    // ★新しいGASのURLやで！★
+    const gasUrl = "https://script.google.com/macros/s/AKfycbwKV8s6fWErOqOUdwEgKgaRGgVJK6mOsL-qN1zU12SFNV8HY8iuhl0QnKmXs8aQga6eqA/exec"; 
 
     let cart = {}; 
     let totalItems = 0;
@@ -650,7 +651,6 @@
 
     function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
 
-    // ★今回の最重要ポイント！会衆名を裏でGASに送る魔法を組み込んだで！★
     function executeOrder() {
       let name = document.getElementById('name').value;
       let phone = document.getElementById('phone').value;
@@ -659,10 +659,8 @@
       
       let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
       
-      // ★ログインした時の「会衆名」を思い出してもらう★
       let kaishu = localStorage.getItem('rescueKaishuName') || "";
       
-      // ★kaishuName も一緒にGASへ手紙で送る！★
       let data = { action: "order", name: name, phone: phone, address: address, items: itemsText, comment: comment, kaishuName: kaishu };
 
       closeConfirm(); showToast("送信中です…少々お待ちください。");
