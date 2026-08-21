@@ -111,7 +111,6 @@
         </div>
 
         <h3>🔍 カテゴリ</h3>
-        <button class="category-btn" style="background: #009688;" onclick="showPage('free-page')">💡 フリー依頼</button>
         <button class="category-btn" style="background: #1e88e5;" onclick="showPage('drink-page')">🧃 飲料</button>
         <button class="category-btn" style="background: #8d6e63;" onclick="showPage('rice-page')">🍚 お米</button>
         <button class="category-btn" style="background: #ff7043;" onclick="showPage('retort-page')">🍛 レトルト</button>
@@ -120,6 +119,9 @@
         <button class="category-btn" style="background: #5e35b1;" onclick="showPage('snack-page')">🍪 おやつ</button>
         <button class="category-btn" style="background: #66bb6a;" onclick="showPage('daily-page')">🧻 日用品</button>
         <button class="category-btn" style="background: #0277bd;" onclick="showPage('kitchen-page')">🥢 キッチン</button>
+        
+        <!-- ★変更：フリー依頼のボタンをキッチンの下に移動！★ -->
+        <button class="category-btn" style="background: #009688;" onclick="showPage('free-page')">💡 フリー依頼</button>
         
         <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
         <button class="category-btn" style="background: #e91e63;" onclick="showPage('cart-page')">🛒 カート</button>
@@ -132,29 +134,6 @@
           <div class="item">
             <h3 style="margin-top:0; font-size: 16px;">ご案内</h3>
             <p style="font-size: 14px;">左のメニューから必要な物資のカテゴリをお選びください。</p>
-          </div>
-        </div>
-
-        <div id="free-page" class="page">
-          <div class="item">
-            <h3 style="margin-top:0; color: #009688;">💡 フリー依頼</h3>
-            <p style="font-size: 13px; color: #666;">リストにない物資はこちらにご入力ください。<br>※一番下の行に入力すると自動で行が追加されます。</p>
-            
-            <div id="free-request-container">
-              <div class="quantity-box free-row" style="justify-content: flex-start;">
-                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
-              </div>
-              <div class="quantity-box free-row" style="justify-content: flex-start;">
-                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
-              </div>
-              <div class="quantity-box free-row" style="justify-content: flex-start;">
-                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
-              </div>
-            </div>
-            <p style="font-size:12px; color:#e91e63; text-align:center;">※フリー依頼に入力した内容は、最後の確認画面で自動的にまとめられます。</p>
           </div>
         </div>
 
@@ -400,6 +379,33 @@
           </div>
         </div>
 
+        <!-- ★フリー依頼ページ★ -->
+        <div id="free-page" class="page">
+          <div class="item">
+            <h3 style="margin-top:0; color: #009688;">💡 フリー依頼</h3>
+            <!-- ★変更：説明文をボタンを押すように変更★ -->
+            <p style="font-size: 13px; color: #666;">リストにない物資はこちらにご入力ください。<br>※入力後、必ず下の「まとめてカートに追加」ボタンを押してください。<br>※一番下の行に入力すると自動で行が追加されます。</p>
+            
+            <div id="free-request-container">
+              <div class="quantity-box free-row" style="justify-content: flex-start;">
+                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
+                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+              </div>
+              <div class="quantity-box free-row" style="justify-content: flex-start;">
+                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
+                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+              </div>
+              <div class="quantity-box free-row" style="justify-content: flex-start;">
+                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
+                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+              </div>
+            </div>
+            
+            <!-- ★追加：まとめてカートに追加するボタン！★ -->
+            <button class="submit-btn" style="background: #ff9800; margin-top: 15px;" onclick="addFreeCart()">まとめてカートに追加 ＋</button>
+          </div>
+        </div>
+
         <!-- 🛒 カートページ -->
         <div id="cart-page" class="page">
           <div class="item">
@@ -448,7 +454,6 @@
   </div>
 
   <script>
-    // ★新しいGASのURLがバッチリ入ってるで！★
     const gasUrl = "https://script.google.com/macros/s/AKfycbx2ikrc3GTQxPwVxMr03_6JOgVwe7liSMlpHclE13QopDVelu72sN3hNyIEfXqYouIqsA/exec"; 
 
     let cart = {}; 
@@ -494,6 +499,47 @@
         div.innerHTML = `<input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
                          <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">`;
         container.appendChild(div);
+      }
+    }
+
+    // ★追加：フリー依頼の入力をカートにガツンと追加する魔法★
+    function addFreeCart() {
+      let added = false;
+      let names = document.querySelectorAll('.free-name');
+      let qties = document.querySelectorAll('.free-qty');
+
+      for (let i = 0; i < names.length; i++) {
+        let fn = names[i].value.trim();
+        let fq = parseInt(qties[i].value) || 1;
+        if (fn !== '') {
+          // カート内で分かりやすいように (フリー依頼) って付けるで！
+          let itemName = fn + " (フリー依頼)";
+          cart[itemName] = (cart[itemName] || 0) + fq;
+          added = true;
+        }
+      }
+
+      if (added) {
+        recalcTotal(); updateCartView(); saveData();
+        showToast("フリー依頼をカートに追加しました。");
+
+        // 追加したら、入力欄をスッキリ3行に戻してあげる親切設計やで！
+        document.getElementById('free-request-container').innerHTML = `
+          <div class="quantity-box free-row" style="justify-content: flex-start;">
+            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
+            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+          </div>
+          <div class="quantity-box free-row" style="justify-content: flex-start;">
+            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
+            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+          </div>
+          <div class="quantity-box free-row" style="justify-content: flex-start;">
+            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
+            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+          </div>
+        `;
+      } else {
+        alert("リクエスト品名を入力してください。");
       }
     }
 
@@ -588,23 +634,13 @@
       let address = document.getElementById('address').value;
       let comment = document.getElementById('order-comment').value;
       
-      let freeItems = [];
-      document.querySelectorAll('.free-row').forEach(row => {
-        let fn = row.querySelector('.free-name').value.trim();
-        let fq = row.querySelector('.free-qty').value;
-        if(fn) freeItems.push(`・${fn} : ${fq}個 (フリー依頼)`);
-      });
-      
-      if (!name || !phone || !address || (totalItems === 0 && freeItems.length === 0)) { 
-        alert("お名前、お電話番号、お届け先を入力し、物資を1つ以上選択（またはフリー依頼に入力）してください。"); 
+      // ★フリー依頼もカートに入ってるから、ここでややこしい処理は必要なくなったで！★
+      if (!name || !phone || !address || totalItems === 0) { 
+        alert("お名前、お電話番号、お届け先を入力し、物資を1つ以上選択してください。"); 
         return; 
       }
       
       let itemsText = Object.entries(cart).map(([item, qty]) => `・${item} : ${qty}個`).join('<br>');
-      if(freeItems.length > 0) {
-        itemsText += (itemsText ? '<br>' : '') + freeItems.join('<br>');
-      }
-      
       let commentHtml = comment ? `<br><strong>💬 コメント：</strong><br>${comment.replace(/\n/g, '<br>')}` : '';
 
       document.getElementById('confirm-text').innerHTML = `
@@ -625,13 +661,8 @@
       let address = document.getElementById('address').value;
       let comment = document.getElementById('order-comment').value;
       
-      let itemsTextList = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`);
-      document.querySelectorAll('.free-row').forEach(row => {
-        let fn = row.querySelector('.free-name').value.trim();
-        let fq = row.querySelector('.free-qty').value;
-        if(fn) itemsTextList.push(`${fn}(${fq})`);
-      });
-      let itemsText = itemsTextList.join(' ');
+      // ★送信するデータもカートの中身だけを拾えばOKになってスッキリ！★
+      let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
       
       let data = { action: "order", name: name, phone: phone, address: address, items: itemsText, comment: comment };
 
@@ -646,21 +677,6 @@
         document.getElementById('phone').value = '';
         document.getElementById('address').value = '';
         document.getElementById('order-comment').value = '';
-        
-        document.getElementById('free-request-container').innerHTML = `
-          <div class="quantity-box free-row" style="justify-content: flex-start;">
-            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
-          </div>
-          <div class="quantity-box free-row" style="justify-content: flex-start;">
-            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
-          </div>
-          <div class="quantity-box free-row" style="justify-content: flex-start;">
-            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
-          </div>
-        `;
         
         saveData(); recalcTotal(); updateCartView(); showPage('top-page'); 
       })
