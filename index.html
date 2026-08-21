@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -8,9 +7,15 @@
   <style>
     body { font-family: sans-serif; padding: 10px; padding-bottom: 90px; background-color: #f4f7f6; color: #333; margin: 0; }
     
-    h2 { text-align: center; margin-bottom: 15px; font-size: 20px; cursor: pointer; }
-    h2:active { opacity: 0.7; }
+    /* ★変更：タイトルの周りにログアウトボタンを置けるようにしたで！★ */
+    .header-container { position: relative; text-align: center; margin-bottom: 15px; }
+    .header-container h2 { margin: 0; font-size: 20px; cursor: pointer; color: #1976d2; display: inline-block; padding-top: 5px; }
+    .header-container h2:active { opacity: 0.7; }
     
+    /* ★追加：右上のログアウトボタンのデザイン★ */
+    .logout-btn { position: absolute; right: 0; top: 5px; background: #9e9e9e; color: white; border: none; padding: 6px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    .logout-btn:active { background: #757575; }
+
     button, input, textarea { touch-action: manipulation; }
 
     #login-screen { max-width: 400px; margin: 80px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
@@ -70,7 +75,8 @@
 
     @media (min-width: 768px) {
       body { padding: 20px; padding-bottom: 80px; }
-      h2 { font-size: 24px; margin-bottom: 20px; }
+      .header-container h2 { font-size: 24px; padding-top: 0; }
+      .logout-btn { top: 0; padding: 8px 15px; font-size: 14px; }
       .shop-layout { gap: 20px; }
       .sidebar { width: 220px; padding: 15px; top: 20px; max-height: 90vh; }
       .sidebar h3 { font-size: 18px; text-align: left; }
@@ -95,7 +101,6 @@
   <div id="login-screen">
     <h3>🔒 ログイン</h3>
     <p style="font-size: 14px; color: #666;">会衆ごとのIDとパスワードを入力してください。</p>
-    <!-- ★架空のID（sample01）に変更したで！★ -->
     <input type="text" id="site-id" class="form-input" placeholder="ユーザーID (例: sample01)">
     <input type="password" id="site-password" class="form-input" placeholder="パスワード">
     <button class="submit-btn" style="background: #2196f3; margin-top: 15px;" onclick="checkPassword()">ログイン</button>
@@ -104,7 +109,12 @@
   </div>
 
   <div id="main-app">
-    <h2 onclick="showPage('top-page')" style="color: #1976d2;">📦 救援物資 依頼サイト</h2>
+    <!-- ★変更：ヘッダーの中にタイトルとログアウトボタンを横並びで配置したで！★ -->
+    <div class="header-container">
+      <h2 onclick="showPage('top-page')">📦 救援物資 依頼サイト</h2>
+      <button class="logout-btn" onclick="logout()">ログアウト</button>
+    </div>
+    
     <div class="shop-layout">
       
       <div class="sidebar">
@@ -453,7 +463,7 @@
   </div>
 
   <script>
-    // ★新しいGASのURLやで！★
+    // ★最新のGAS URLやで！★
     const gasUrl = "https://script.google.com/macros/s/AKfycbwKV8s6fWErOqOUdwEgKgaRGgVJK6mOsL-qN1zU12SFNV8HY8iuhl0QnKmXs8aQga6eqA/exec"; 
 
     let cart = {}; 
@@ -572,6 +582,25 @@
         document.getElementById('login-loading').style.display = 'none';
         alert("通信エラーが発生しました。もう一度お試しください。");
       });
+    }
+
+    // ★追加：ログアウトする魔法！★
+    function logout() {
+      if(confirm("ログアウトしますか？\n※カートの中身や入力内容もリセットされます。")) {
+        localStorage.clear();
+        cart = {};
+        totalItems = 0;
+        updateCartView();
+        document.getElementById('name').value = '';
+        document.getElementById('phone').value = '';
+        document.getElementById('address').value = '';
+        document.getElementById('order-comment').value = '';
+        document.getElementById('site-id').value = '';
+        document.getElementById('site-password').value = '';
+        document.getElementById('main-app').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'block';
+        showPage('top-page');
+      }
     }
 
     function saveData() {
