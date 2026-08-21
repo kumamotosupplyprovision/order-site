@@ -120,7 +120,6 @@
         <button class="category-btn" style="background: #66bb6a;" onclick="showPage('daily-page')">🧻 日用品</button>
         <button class="category-btn" style="background: #0277bd;" onclick="showPage('kitchen-page')">🥢 キッチン</button>
         
-        <!-- ★変更：フリー依頼のボタンをキッチンの下に移動！★ -->
         <button class="category-btn" style="background: #009688;" onclick="showPage('free-page')">💡 フリー依頼</button>
         
         <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
@@ -383,7 +382,6 @@
         <div id="free-page" class="page">
           <div class="item">
             <h3 style="margin-top:0; color: #009688;">💡 フリー依頼</h3>
-            <!-- ★変更：説明文をボタンを押すように変更★ -->
             <p style="font-size: 13px; color: #666;">リストにない物資はこちらにご入力ください。<br>※入力後、必ず下の「まとめてカートに追加」ボタンを押してください。<br>※一番下の行に入力すると自動で行が追加されます。</p>
             
             <div id="free-request-container">
@@ -401,7 +399,6 @@
               </div>
             </div>
             
-            <!-- ★追加：まとめてカートに追加するボタン！★ -->
             <button class="submit-btn" style="background: #ff9800; margin-top: 15px;" onclick="addFreeCart()">まとめてカートに追加 ＋</button>
           </div>
         </div>
@@ -414,8 +411,9 @@
           </div>
           <div class="item">
             <h3 style="margin-top:0;">📝 お届け先情報</h3>
-            <input type="text" id="name" class="form-input" placeholder="お名前 or 会衆名" oninput="saveData()">
-            <input type="tel" id="phone" class="form-input" placeholder="ご連絡先 お電話番号" oninput="saveData()">
+            <!-- ★ご要望の通り、担当者名とお電話番号に変更したで！★ -->
+            <input type="text" id="name" class="form-input" placeholder="担当者のお名前" oninput="saveData()">
+            <input type="tel" id="phone" class="form-input" placeholder="お電話番号" oninput="saveData()">
             <input type="text" id="address" class="form-input" placeholder="お届け先 ご住所 or ○○王国会館など" oninput="saveData()">
             
             <textarea id="order-comment" class="form-input" rows="3" placeholder="依頼品や配送についてのコメントがあればこちらへどうぞ" oninput="saveData()"></textarea>
@@ -454,7 +452,8 @@
   </div>
 
   <script>
-    const gasUrl = "https://script.google.com/macros/s/AKfycbx2ikrc3GTQxPwVxMr03_6JOgVwe7liSMlpHclE13QopDVelu72sN3hNyIEfXqYouIqsA/exec"; 
+    // ★新しいGASのURLバッチリ更新済み！★
+    const gasUrl = "https://script.google.com/macros/s/AKfycbxKk-TAicQL732TdjcvxQ3Otwat_D_dqZJWAtxwSMDkUhka1pCctD-nWhXtodRe1hj3Dw/exec"; 
 
     let cart = {}; 
     let totalItems = 0;
@@ -502,7 +501,6 @@
       }
     }
 
-    // ★追加：フリー依頼の入力をカートにガツンと追加する魔法★
     function addFreeCart() {
       let added = false;
       let names = document.querySelectorAll('.free-name');
@@ -512,7 +510,6 @@
         let fn = names[i].value.trim();
         let fq = parseInt(qties[i].value) || 1;
         if (fn !== '') {
-          // カート内で分かりやすいように (フリー依頼) って付けるで！
           let itemName = fn + " (フリー依頼)";
           cart[itemName] = (cart[itemName] || 0) + fq;
           added = true;
@@ -523,7 +520,6 @@
         recalcTotal(); updateCartView(); saveData();
         showToast("フリー依頼をカートに追加しました。");
 
-        // 追加したら、入力欄をスッキリ3行に戻してあげる親切設計やで！
         document.getElementById('free-request-container').innerHTML = `
           <div class="quantity-box free-row" style="justify-content: flex-start;">
             <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
@@ -634,7 +630,6 @@
       let address = document.getElementById('address').value;
       let comment = document.getElementById('order-comment').value;
       
-      // ★フリー依頼もカートに入ってるから、ここでややこしい処理は必要なくなったで！★
       if (!name || !phone || !address || totalItems === 0) { 
         alert("お名前、お電話番号、お届け先を入力し、物資を1つ以上選択してください。"); 
         return; 
@@ -661,7 +656,6 @@
       let address = document.getElementById('address').value;
       let comment = document.getElementById('order-comment').value;
       
-      // ★送信するデータもカートの中身だけを拾えばOKになってスッキリ！★
       let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
       
       let data = { action: "order", name: name, phone: phone, address: address, items: itemsText, comment: comment };
