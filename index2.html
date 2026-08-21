@@ -7,16 +7,14 @@
   <style>
     body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; padding: 10px; padding-bottom: 100px; background-color: #f5f7fa; color: #2c3e50; margin: 0; }
     
-    /* ★ヘッダーを「アプリのトップバー風」に大改造！★ */
     .header-container { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.02); }
     .header-container h2 { margin: 0; font-size: 18px; cursor: pointer; color: #2c3e50; display: flex; align-items: center; font-weight: 800; letter-spacing: 1px; transition: transform 0.2s, opacity 0.2s; }
     .header-container h2:active { transform: scale(0.98); opacity: 0.7; }
     
-    /* ★アイコンを専用アプリのロゴみたいにする魔法！★ */
     .header-icon { background: linear-gradient(135deg, #1e88e5, #42a5f5); color: white; width: 36px; height: 36px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3); }
     
-    /* ★ログアウトボタンもヘッダーに合わせてスマートに！★ */
-    .logout-btn { background: #f0f4f8; color: #5c6b7a; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 4px; }
+    /* ★変更：扉マークを消して、スッキリした文字だけのログアウトボタンに！★ */
+    .logout-btn { background: #f0f4f8; color: #5c6b7a; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
     .logout-btn:active { transform: scale(0.95); background: #e0e4e8; color: #e53935; }
 
     button, input, textarea { touch-action: manipulation; outline: none; font-family: inherit; }
@@ -26,6 +24,10 @@
     .error-msg { color: #e53935; font-size: 14px; margin-top: 10px; display: none; font-weight: bold; }
     #main-app { display: none; }
 
+    /* ★追加：クルクル回るローディングアニメーションの魔法！★ */
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(0, 0, 0, 0.1); border-radius: 50%; border-top-color: currentColor; animation: spin 1s ease-in-out infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     .shop-layout { display: flex; flex-direction: row; gap: 12px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
     
     .sidebar { width: 90px; flex-shrink: 0; background: #fff; padding: 12px 6px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); position: sticky; top: 10px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(0,0,0,0.02); }
@@ -34,8 +36,11 @@
     .sidebar-user-box { background: #f0f4f8; padding: 10px 4px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 11px; }
     #display-kaishu-name { display: block; margin-top: 4px; font-size: 12px; color: #1976d2; word-break: break-all; }
 
-    .category-btn { border: none; padding: 12px 4px; margin-bottom: 8px; width: 100%; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.3; transition: transform 0.2s ease, filter 0.2s; }
+    .category-btn { border: none; padding: 12px 4px; margin-bottom: 8px; width: 100%; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.3; transition: transform 0.2s ease, filter 0.2s, box-shadow 0.2s; }
     .category-btn:active { transform: scale(0.95); filter: brightness(0.95); }
+    
+    /* ★追加：今開いてるメニューを目立たせるハイライト機能の魔法！★ */
+    .category-btn.active-menu { box-shadow: inset 0 0 0 2px rgba(44, 62, 80, 0.6); filter: brightness(0.92); transform: scale(0.98); }
     
     .main-content { flex: 1; min-width: 0; }
     .page { display: none; }
@@ -124,16 +129,17 @@
     <input type="password" id="site-password" class="form-input" placeholder="パスワード">
     <button class="submit-btn" style="background: linear-gradient(135deg, #1e88e5, #42a5f5); box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3); margin-top: 20px;" onclick="checkPassword()">ログイン</button>
     <p id="login-error" class="error-msg">IDまたはパスワードが間違っています。</p>
-    <p id="login-loading" class="error-msg" style="color:#1e88e5;">確認中です…少々お待ちください。</p>
+    <!-- ★追加：ログイン確認中にもクルクル回るスピナー！★ -->
+    <p id="login-loading" class="error-msg" style="color:#1e88e5;"><span class="spinner" style="border-top-color:#1e88e5;"></span>確認中です…少々お待ちください。</p>
   </div>
 
   <div id="main-app">
-    <!-- ★ヘッダーがオサレなフローティングカードに変身！★ -->
     <div class="header-container">
       <h2 onclick="showPage('top-page')">
         <span class="header-icon">📦</span>救援物資 依頼サイト
       </h2>
-      <button class="logout-btn" onclick="logout()"><span>🚪</span> ログアウト</button>
+      <!-- ★変更：扉マークを消したシンプルなログアウトボタン！★ -->
+      <button class="logout-btn" onclick="logout()">ログアウト</button>
     </div>
     
     <div class="shop-layout">
@@ -144,20 +150,21 @@
         </div>
 
         <h3>🔍 カテゴリ</h3>
-        <button class="category-btn" style="background: #e3f2fd; color: #1565c0;" onclick="showPage('drink-page')">🧃 飲料</button>
-        <button class="category-btn" style="background: #efebe9; color: #4e342e;" onclick="showPage('rice-page')">🍚 お米</button>
-        <button class="category-btn" style="background: #fbe9e7; color: #d84315;" onclick="showPage('retort-page')">🍛 レトルト</button>
-        <button class="category-btn" style="background: #e8f5e9; color: #2e7d32;" onclick="showPage('pouch-page')">🥫 パウチ</button>
-        <button class="category-btn" style="background: #fffde7; color: #f57f17;" onclick="showPage('noodle-page')">🍜 麺類</button>
-        <button class="category-btn" style="background: #ede7f6; color: #4527a0;" onclick="showPage('snack-page')">🍪 おやつ</button>
-        <button class="category-btn" style="background: #e0f2f1; color: #00695c;" onclick="showPage('daily-page')">🧻 日用品</button>
-        <button class="category-btn" style="background: #eceff1; color: #455a64;" onclick="showPage('kitchen-page')">🥢 キッチン</button>
+        <!-- ★変更：ボタンを押した時に「this（自分自身）」の情報を送ってハイライトさせる魔法！★ -->
+        <button class="category-btn" style="background: #e3f2fd; color: #1565c0;" onclick="showPage('drink-page', this)">🧃 飲料</button>
+        <button class="category-btn" style="background: #efebe9; color: #4e342e;" onclick="showPage('rice-page', this)">🍚 お米</button>
+        <button class="category-btn" style="background: #fbe9e7; color: #d84315;" onclick="showPage('retort-page', this)">🍛 レトルト</button>
+        <button class="category-btn" style="background: #e8f5e9; color: #2e7d32;" onclick="showPage('pouch-page', this)">🥫 パウチ</button>
+        <button class="category-btn" style="background: #fffde7; color: #f57f17;" onclick="showPage('noodle-page', this)">🍜 麺類</button>
+        <button class="category-btn" style="background: #ede7f6; color: #4527a0;" onclick="showPage('snack-page', this)">🍪 おやつ</button>
+        <button class="category-btn" style="background: #e0f2f1; color: #00695c;" onclick="showPage('daily-page', this)">🧻 日用品</button>
+        <button class="category-btn" style="background: #eceff1; color: #455a64;" onclick="showPage('kitchen-page', this)">🥢 キッチン</button>
         
-        <button class="category-btn" style="background: #e0f7fa; color: #00838f; border: 1px solid #b2ebf2;" onclick="showPage('free-page')">💡 フリー依頼</button>
+        <button class="category-btn" style="background: #e0f7fa; color: #00838f; border: 1px solid #b2ebf2;" onclick="showPage('free-page', this)">💡 フリー依頼</button>
         
         <hr style="border: 0; border-top: 2px dashed #e0e4e8; margin: 20px 0;">
-        <button class="category-btn" style="background: #fce4ec; color: #c2185b;" onclick="showPage('cart-page')">🛒 カート</button>
-        <button class="category-btn" style="background: #f5f5f5; color: #616161;" onclick="fetchHistory()">📜 履歴</button>
+        <button class="category-btn" style="background: #fce4ec; color: #c2185b;" onclick="showPage('cart-page', this)">🛒 カート</button>
+        <button class="category-btn" style="background: #f5f5f5; color: #616161;" onclick="fetchHistory(this)">📜 履歴</button>
       </div>
 
       <div class="main-content">
@@ -458,8 +465,9 @@
         <div id="history-page" class="page">
           <div class="item">
             <h3 style="color: #4caf50; margin-top:0; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px;">📜 過去の注文履歴</h3>
+            <!-- ★追加：履歴取得中のクルクルスピナー！★ -->
             <div id="history-loading" style="text-align: center; color: #4caf50; padding: 20px; display: none; font-weight: bold;">
-              履歴を検索中です…少々お待ちください。🔍
+              <span class="spinner" style="border-top-color:#4caf50;"></span>履歴を検索中です…少々お待ちください。
             </div>
             <div id="history-content"></div>
           </div>
@@ -467,7 +475,8 @@
 
       </div> 
     </div> 
-    <div class="floating-cart" onclick="showPage('cart-page')">🛒 カート (<span id="cart-count">0</span>)</div>
+    <!-- ★右下のフローティングカートボタンにも、アイコンクリックで動作するように少し工夫を★ -->
+    <div class="floating-cart" onclick="showPage('cart-page', document.querySelector('.category-btn[onclick*=\\'cart-page\\']'))">🛒 カート (<span id="cart-count">0</span>)</div>
   </div> 
 
   <div id="toast">メッセージ</div>
@@ -634,10 +643,18 @@
       localStorage.setItem('rescueComment', document.getElementById('order-comment').value);
     }
 
-    function showPage(pageId) {
+    // ★変更：引数に自分が押されたボタンの情報(btnElement)を受け取って、色を濃くするハイライト魔法！★
+    function showPage(pageId, btnElement = null) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
       window.scrollTo(0, 0); 
+      
+      // 一旦すべてのボタンからハイライトを消す
+      document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active-menu'));
+      // 押されたボタンにだけハイライトをつける！
+      if (btnElement) {
+        btnElement.classList.add('active-menu');
+      }
     }
 
     function changeQty(inputId, amount) {
@@ -646,10 +663,14 @@
       input.value = newVal < 1 ? 1 : newVal;
     }
 
-    function showToast(message) {
+    // ★変更：ローディング中（通信中）ならスピナー付きで出すように調整！★
+    function showToast(message, keep = false) {
       let toast = document.getElementById("toast");
-      toast.innerText = message; toast.className = "show"; 
-      setTimeout(() => toast.className = toast.className.replace("show", ""), 1500);
+      toast.innerHTML = message; 
+      toast.className = "show"; 
+      if (!keep) {
+        setTimeout(() => toast.className = toast.className.replace("show", ""), 1500);
+      }
     }
 
     function addCart(itemName, inputId) {
@@ -710,17 +731,19 @@
       let comment = document.getElementById('order-comment').value;
       
       let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
-      
       let kaishu = localStorage.getItem('rescueKaishuName') || "";
       
       let data = { action: "order", name: name, phone: phone, address: address, items: itemsText, comment: comment, kaishuName: kaishu };
 
-      closeConfirm(); showToast("送信中です…少々お待ちください。");
+      closeConfirm(); 
+      // ★追加：送信中にクルクルスピナーを出す！★
+      showToast('<span class="spinner" style="border-top-color:#fff;"></span>送信中です…少々お待ちください。', true);
 
       fetch(gasUrl, {
         method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(data)
       })
       .then(response => {
+        document.getElementById("toast").className = document.getElementById("toast").className.replace("show", "");
         alert("送信が完了しました。ご依頼ありがとうございました。");
         cart = {}; 
         document.getElementById('phone').value = '';
@@ -729,11 +752,15 @@
         
         saveData(); recalcTotal(); updateCartView(); showPage('top-page'); 
       })
-      .catch(error => { alert("通信エラーが発生しました。もう一度お試しください。"); });
+      .catch(error => { 
+        document.getElementById("toast").className = document.getElementById("toast").className.replace("show", "");
+        alert("通信エラーが発生しました。もう一度お試しください。"); 
+      });
     }
 
-    function fetchHistory() {
-      showPage('history-page'); 
+    // 引数で「押されたボタン」を受け取れるように微調整
+    function fetchHistory(btnElement) {
+      showPage('history-page', btnElement); 
       
       let kaishuName = localStorage.getItem('rescueKaishuName');
       if (!kaishuName) return;
