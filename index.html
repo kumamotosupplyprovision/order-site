@@ -5,42 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>救援物資 依頼フォーム</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; padding-bottom: 80px; background-color: #f4f7f6; color: #333; margin: 0; }
-    h2 { text-align: center; margin-bottom: 20px; }
+    /* ★変更：スマホの時は左右の余白を10pxにして、画面を広く使うで！★ */
+    body { font-family: sans-serif; padding: 10px; padding-bottom: 90px; background-color: #f4f7f6; color: #333; margin: 0; }
+    h2 { text-align: center; margin-bottom: 20px; font-size: 22px; }
     
-    #login-screen { max-width: 400px; margin: 100px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
+    /* ★追加：ダブルタップで「ニュン」って拡大されるのを防ぐ魔法！★ */
+    button, input { touch-action: manipulation; }
+
+    /* ログイン画面のデザイン */
+    #login-screen { max-width: 400px; margin: 80px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
     #login-screen h3 { margin-top: 0; color: #2196f3; }
     .error-msg { color: #f44336; font-size: 14px; margin-top: 10px; display: none; }
     #main-app { display: none; }
 
-    .shop-layout { display: flex; flex-direction: column; gap: 20px; max-width: 1000px; margin: 0 auto; }
+    .shop-layout { display: flex; flex-direction: column; gap: 15px; max-width: 1000px; margin: 0 auto; }
     .sidebar { background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .sidebar h3 { margin-top: 0; }
     .category-btn { background: #2196f3; color: white; border: none; padding: 12px; margin-bottom: 8px; width: 100%; border-radius: 8px; font-size: 15px; cursor: pointer; text-align: left; }
     .main-content { flex: 1; }
 
+    /* パソコン（画面が広い時）だけの魔法 */
     @media (min-width: 768px) {
-      .shop-layout { flex-direction: row; }
+      body { padding: 20px; padding-bottom: 80px; } /* パソコンの時は余白を広くする */
+      .shop-layout { flex-direction: row; gap: 20px; }
       .sidebar { width: 220px; position: sticky; top: 20px; align-self: flex-start; max-height: 90vh; overflow-y: auto; }
     }
 
     .page { display: none; }
     .active { display: block; }
     .item { background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .item h4 { margin-top: 0; margin-bottom: 10px; color: #333; }
+    .item h4 { margin-top: 0; margin-bottom: 10px; color: #333; font-size: 16px; }
     
-    .form-input { padding: 10px; margin-top: 5px; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    .add-btn { background: #ff9800; color: #fff; border: none; border-radius: 5px; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; }
+    /* ★追加：入力欄を選択した時に勝手にズームしないように、文字サイズを16pxに固定★ */
+    .form-input { padding: 10px; margin-top: 5px; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+    
+    .add-btn { background: #ff9800; color: #fff; border: none; border-radius: 5px; padding: 12px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; }
     .submit-btn { background: #4caf50; color: #fff; border: none; border-radius: 5px; padding: 15px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; margin-top: 15px; }
 
     .quantity-box { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-    .quantity-box button { width: 40px; height: 40px; font-size: 20px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer; }
-    .quantity-box input { width: 60px; height: 40px; text-align: center; font-size: 18px; margin: 0 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    .quantity-box button { width: 44px; height: 44px; font-size: 24px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer; }
+    .quantity-box input { width: 60px; height: 44px; text-align: center; font-size: 18px; margin: 0 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
 
     #cart-list { list-style: none; padding: 0; margin: 0; }
     .cart-item { display: flex; justify-content: space-between; align-items: center; background: #f9f9f9; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #eee; }
+    .cart-item-name { font-size: 15px; font-weight: bold; }
     .cart-action-box { display: flex; align-items: center; }
-    .cart-action-box button { width: 32px; height: 32px; font-size: 16px; margin: 0 5px; border: none; border-radius: 4px; cursor: pointer; background: #e0e0e0; }
+    .cart-action-box button { width: 36px; height: 36px; font-size: 18px; margin: 0 5px; border: none; border-radius: 4px; cursor: pointer; background: #e0e0e0; }
     .cart-action-box .cart-item-qty { width: 30px; text-align: center; font-weight: bold; }
     .cart-action-box .delete-btn { background: transparent; } 
 
@@ -79,14 +89,13 @@
     <h2>📦 救援物資 依頼ページ</h2>
     <div class="shop-layout">
       
-      <!-- サイドバー（メニュー） -->
+      <!-- サイドバー -->
       <div class="sidebar">
         <div style="background: #e3f2fd; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-weight: bold; color: #1976d2;">
           👤 <span id="display-kaishu-name">ゲスト</span> さん
         </div>
 
         <h3>🔍 カテゴリ</h3>
-        <!-- 追加したカテゴリの一覧やで！ -->
         <button class="category-btn" style="background: #1e88e5;" onclick="showPage('drink-page')">🧃 飲料</button>
         <button class="category-btn" style="background: #8d6e63;" onclick="showPage('rice-page')">🍚 お米</button>
         <button class="category-btn" style="background: #ff7043;" onclick="showPage('retort-page')">🍛 レトルト</button>
@@ -114,7 +123,6 @@
         <!-- 🧃 飲料ページ -->
         <div id="drink-page" class="page">
           <h3>🧃 飲料</h3>
-          <!-- 水2L(6本入り) -->
           <div class="item">
             <h4>水2L(6本入り) - 箱</h4>
             <div class="quantity-box">
@@ -122,7 +130,6 @@
             </div>
             <button class="add-btn" onclick="addCart('水2L(6本入り)', 'qty-drink1')">カートに追加 ＋</button>
           </div>
-          <!-- 水500ml(24本入り) -->
           <div class="item">
             <h4>水500ml(24本入り) - 箱</h4>
             <div class="quantity-box">
@@ -130,7 +137,6 @@
             </div>
             <button class="add-btn" onclick="addCart('水500ml(24本入り)', 'qty-drink2')">カートに追加 ＋</button>
           </div>
-          <!-- お茶2L(6本入り) -->
           <div class="item">
             <h4>お茶2L(6本入り) - 箱</h4>
             <div class="quantity-box">
@@ -138,7 +144,6 @@
             </div>
             <button class="add-btn" onclick="addCart('お茶2L(6本入り)', 'qty-drink3')">カートに追加 ＋</button>
           </div>
-          <!-- お茶500ml(24本入り) -->
           <div class="item">
             <h4>お茶500ml(24本入り) - 箱</h4>
             <div class="quantity-box">
@@ -146,7 +151,6 @@
             </div>
             <button class="add-btn" onclick="addCart('お茶500ml(24本入り)', 'qty-drink4')">カートに追加 ＋</button>
           </div>
-          <!-- スポドリ2L -->
           <div class="item">
             <h4>スポドリ2L - 本</h4>
             <div class="quantity-box">
@@ -154,7 +158,6 @@
             </div>
             <button class="add-btn" onclick="addCart('スポドリ2L', 'qty-drink5')">カートに追加 ＋</button>
           </div>
-          <!-- スポドリ500ml -->
           <div class="item">
             <h4>スポドリ500ml - 箱</h4>
             <div class="quantity-box">
@@ -162,7 +165,6 @@
             </div>
             <button class="add-btn" onclick="addCart('スポドリ500ml', 'qty-drink6')">カートに追加 ＋</button>
           </div>
-          <!-- ジュース500ml -->
           <div class="item">
             <h4>ジュース500ml - 箱</h4>
             <div class="quantity-box">
@@ -170,7 +172,6 @@
             </div>
             <button class="add-btn" onclick="addCart('ジュース500ml', 'qty-drink7')">カートに追加 ＋</button>
           </div>
-          <!-- 炭酸飲料 500ml -->
           <div class="item">
             <h4>炭酸飲料 500ml - 箱</h4>
             <div class="quantity-box">
@@ -178,7 +179,6 @@
             </div>
             <button class="add-btn" onclick="addCart('炭酸飲料500ml', 'qty-drink8')">カートに追加 ＋</button>
           </div>
-          <!-- コーヒー飲料500ml〜1L -->
           <div class="item">
             <h4>コーヒー飲料500ml〜1L - 本</h4>
             <div class="quantity-box">
@@ -186,7 +186,6 @@
             </div>
             <button class="add-btn" onclick="addCart('コーヒー飲料500ml〜1L', 'qty-drink9')">カートに追加 ＋</button>
           </div>
-          <!-- 紅茶500ml -->
           <div class="item">
             <h4>紅茶500ml - 本</h4>
             <div class="quantity-box">
@@ -194,7 +193,6 @@
             </div>
             <button class="add-btn" onclick="addCart('紅茶500ml', 'qty-drink10')">カートに追加 ＋</button>
           </div>
-          <!-- 野菜ジュース(12個入りパック) -->
           <div class="item">
             <h4>野菜ジュース(12個入りパック) - パック</h4>
             <div class="quantity-box">
@@ -202,7 +200,6 @@
             </div>
             <button class="add-btn" onclick="addCart('野菜ジュース(12個入り)', 'qty-drink11')">カートに追加 ＋</button>
           </div>
-          <!-- 果物ジュース -->
           <div class="item">
             <h4>果物ジュース - 個</h4>
             <div class="quantity-box">
@@ -418,7 +415,7 @@
   </div>
 
   <script>
-    // ★★★ここにGASのURLを貼り替えてな！★★★
+    // ★ゆうさんのGASのURL、そのまま入ってるで！★
     const gasUrl = "https://script.google.com/macros/s/AKfycbwqZhq4-esewChKgYfZHC2QDPZvWMccGC-5gkGXkGreRxzWfqPvE3j2fYSranl6ELFZOQ/exec"; 
 
     let cart = {}; 
@@ -489,6 +486,7 @@
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
+      window.scrollTo(0, 0); // ページ切り替え時に一番上にスクロールする魔法も足しといたで！
     }
 
     function changeQty(inputId, amount) {
