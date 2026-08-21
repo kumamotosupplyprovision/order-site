@@ -5,94 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>救援物資 依頼サイト</title>
   <style>
-    body { font-family: sans-serif; padding: 10px; padding-bottom: 90px; background-color: #f4f7f6; color: #333; margin: 0; }
+    /* ★全体を洗練されたフォントと背景色に★ */
+    body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; padding: 10px; padding-bottom: 100px; background-color: #f5f7fa; color: #2c3e50; margin: 0; }
     
-    /* ★変更：タイトルの周りにログアウトボタンを置けるようにしたで！★ */
-    .header-container { position: relative; text-align: center; margin-bottom: 15px; }
-    .header-container h2 { margin: 0; font-size: 20px; cursor: pointer; color: #1976d2; display: inline-block; padding-top: 5px; }
+    .header-container { position: relative; text-align: center; margin-bottom: 20px; padding-top: 10px; }
+    .header-container h2 { margin: 0; font-size: 22px; cursor: pointer; color: #1976d2; display: inline-block; font-weight: 800; letter-spacing: 1px; }
     .header-container h2:active { opacity: 0.7; }
     
-    /* ★追加：右上のログアウトボタンのデザイン★ */
-    .logout-btn { position: absolute; right: 0; top: 5px; background: #9e9e9e; color: white; border: none; padding: 6px 10px; border-radius: 5px; font-size: 12px; font-weight: bold; cursor: pointer; }
-    .logout-btn:active { background: #757575; }
+    .logout-btn { position: absolute; right: 0; top: 12px; background: #e0e4e8; color: #5c6b7a; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .logout-btn:active { transform: scale(0.95); background: #d1d8e0; }
 
-    button, input, textarea { touch-action: manipulation; }
+    button, input, textarea { touch-action: manipulation; outline: none; font-family: inherit; }
 
-    #login-screen { max-width: 400px; margin: 80px auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; }
-    #login-screen h3 { margin-top: 0; color: #2196f3; }
-    .error-msg { color: #f44336; font-size: 14px; margin-top: 10px; display: none; }
+    /* ログイン画面のオサレ化 */
+    #login-screen { max-width: 400px; margin: 10vh auto; background: #fff; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid rgba(0,0,0,0.02); }
+    #login-screen h3 { margin-top: 0; color: #1e88e5; font-size: 24px; margin-bottom: 10px; }
+    .error-msg { color: #e53935; font-size: 14px; margin-top: 10px; display: none; font-weight: bold; }
     #main-app { display: none; }
 
-    .shop-layout { display: flex; flex-direction: row; gap: 8px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
+    .shop-layout { display: flex; flex-direction: row; gap: 12px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
     
-    .sidebar { width: 85px; flex-shrink: 0; background: #fff; padding: 10px 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 10px; max-height: 85vh; overflow-y: auto; }
-    .sidebar h3 { margin-top: 0; font-size: 12px; text-align: center; margin-bottom: 10px; }
+    /* サイドバーのオサレ化 */
+    .sidebar { width: 90px; flex-shrink: 0; background: #fff; padding: 12px 6px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); position: sticky; top: 10px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(0,0,0,0.02); }
+    .sidebar h3 { margin-top: 0; font-size: 13px; text-align: center; margin-bottom: 12px; color: #7f8c8d; }
     
-    .sidebar-user-box { background: #e3f2fd; padding: 8px 2px; border-radius: 5px; margin-bottom: 10px; text-align: center; font-weight: bold; color: #1976d2; font-size: 10px; }
-    #display-kaishu-name { display: block; margin-top: 3px; font-size: 11px; word-break: break-all; }
+    .sidebar-user-box { background: #f0f4f8; padding: 10px 4px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 11px; }
+    #display-kaishu-name { display: block; margin-top: 4px; font-size: 12px; color: #1976d2; word-break: break-all; }
 
-    .category-btn { color: white; border: none; padding: 12px 2px; margin-bottom: 8px; width: 100%; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.2; }
+    /* カテゴリボタンを上品なパステルカラーに！ */
+    .category-btn { border: none; padding: 12px 4px; margin-bottom: 8px; width: 100%; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.3; transition: transform 0.2s ease, filter 0.2s; }
+    .category-btn:active { transform: scale(0.95); filter: brightness(0.95); }
     
     .main-content { flex: 1; min-width: 0; }
     .page { display: none; }
-    .active { display: block; }
+    .active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     
-    .item { background: #fff; padding: 10px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .item h4 { margin-top: 0; margin-bottom: 8px; color: #333; font-size: 14px; line-height: 1.4; }
+    /* 商品カードのオサレ化 */
+    .item { background: #fff; padding: 16px; margin-bottom: 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; }
+    .item h4 { margin-top: 0; margin-bottom: 12px; color: #2c3e50; font-size: 15px; line-height: 1.4; }
     
-    .form-input { padding: 10px; margin-top: 5px; margin-bottom: 5px; width: 100%; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-    .add-btn { background: #ff9800; color: #fff; border: none; border-radius: 5px; padding: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px; }
-    .submit-btn { background: #4caf50; color: #fff; border: none; border-radius: 5px; padding: 15px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 15px; }
+    /* 入力フォームのオサレ化 */
+    .form-input { padding: 12px 15px; margin-top: 5px; margin-bottom: 10px; width: 100%; box-sizing: border-box; border: 2px solid #e0e4e8; border-radius: 12px; font-size: 16px; transition: border-color 0.3s, box-shadow 0.3s; background: #fafbfc; }
+    .form-input:focus { border-color: #2196f3; background: #fff; box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1); }
+    
+    /* カート追加ボタン（グラデーション＋影） */
+    .add-btn { background: linear-gradient(135deg, #fb8c00, #ffb74d); color: #fff; border: none; border-radius: 12px; padding: 12px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(251, 140, 0, 0.3); transition: all 0.2s ease; }
+    .add-btn:active { transform: scale(0.96); box-shadow: 0 2px 5px rgba(251, 140, 0, 0.2); }
+    
+    .submit-btn { background: linear-gradient(135deg, #43a047, #66bb6a); color: #fff; border: none; border-radius: 12px; padding: 16px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 15px; box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3); transition: all 0.2s ease; }
+    .submit-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(67, 160, 71, 0.2); }
 
-    .quantity-box { display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
-    .quantity-box button { width: 36px; height: 36px; font-size: 20px; background: #e0e0e0; border: none; border-radius: 5px; cursor: pointer; }
-    .quantity-box input { width: 45px; height: 36px; text-align: center; font-size: 16px; margin: 0 8px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+    /* 数量変更の「カプセル化」デザイン！ */
+    .quantity-box { display: inline-flex; align-items: center; justify-content: center; background: #f0f4f8; border-radius: 30px; padding: 5px; margin-bottom: 12px; align-self: flex-start; }
+    .quantity-box button { width: 34px; height: 34px; font-size: 18px; font-weight: bold; background: #fff; color: #2c3e50; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.08); transition: transform 0.1s; display: flex; align-items: center; justify-content: center; }
+    .quantity-box button:active { transform: scale(0.9); background: #e0e4e8; }
+    .quantity-box input { width: 45px; height: 34px; text-align: center; font-size: 16px; font-weight: bold; background: transparent; border: none; margin: 0 5px; color: #2c3e50; }
 
     #cart-list { list-style: none; padding: 0; margin: 0; }
-    .cart-item { display: flex; flex-direction: column; background: #f9f9f9; padding: 10px; margin-bottom: 8px; border-radius: 5px; border: 1px solid #eee; }
-    .cart-item-name { font-size: 14px; font-weight: bold; margin-bottom: 8px; }
-    .cart-action-box { display: flex; align-items: center; justify-content: flex-end; }
-    .cart-action-box button { width: 32px; height: 32px; font-size: 16px; margin: 0 4px; border: none; border-radius: 4px; cursor: pointer; background: #e0e0e0; }
-    .cart-action-box .cart-item-qty { width: 25px; text-align: center; font-weight: bold; font-size: 14px; }
-    .cart-action-box .delete-btn { background: transparent; font-size: 18px; } 
+    .cart-item { display: flex; flex-direction: column; background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .cart-item-name { font-size: 15px; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
+    .cart-action-box { display: flex; align-items: center; justify-content: flex-end; background: #f0f4f8; border-radius: 30px; padding: 4px; align-self: flex-end; }
+    .cart-action-box button { width: 32px; height: 32px; font-size: 16px; margin: 0 2px; border: none; border-radius: 50%; cursor: pointer; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.08); font-weight: bold; transition: transform 0.1s; }
+    .cart-action-box button:active { transform: scale(0.9); }
+    .cart-action-box .cart-item-qty { width: 30px; text-align: center; font-weight: bold; font-size: 14px; color: #2c3e50; }
+    .cart-action-box .delete-btn { background: transparent; box-shadow: none; font-size: 18px; margin-left: 10px; } 
 
-    .floating-cart { position: fixed; bottom: 20px; right: 20px; background: #e91e63; color: white; padding: 12px 18px; border-radius: 50px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); cursor: pointer; z-index: 1000; }
-    #toast { visibility: hidden; min-width: 200px; background-color: #323232; color: #fff; text-align: center; border-radius: 30px; padding: 10px 15px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: bold; opacity: 0; transition: opacity 0.4s, bottom 0.4s; }
-    #toast.show { visibility: visible; opacity: 1; bottom: 80px; }
-
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; align-items: center; justify-content: center; }
-    .modal-content { background: #fff; padding: 15px; border-radius: 10px; width: 90%; max-width: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-height: 80vh; overflow-y: auto; }
-    .modal-content h3 { margin-top: 0; text-align: center; color: #e91e63; font-size: 18px; }
-    .confirm-details { background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px; line-height: 1.5; }
-    .modal-btns { display: flex; gap: 8px; }
-    .modal-btns button { flex: 1; padding: 10px; font-size: 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-    .btn-cancel { background: #9e9e9e; color: #fff; }
-    .btn-send { background: #4caf50; color: #fff; }
+    /* 右下のフローティングカートボタン */
+    .floating-cart { position: fixed; bottom: 25px; right: 20px; background: linear-gradient(135deg, #e91e63, #f06292); color: white; padding: 14px 22px; border-radius: 50px; font-size: 16px; font-weight: bold; box-shadow: 0 6px 16px rgba(233, 30, 99, 0.4); cursor: pointer; z-index: 1000; transition: transform 0.2s ease; display: flex; align-items: center; gap: 8px; }
+    .floating-cart:active { transform: scale(0.95); }
     
-    .history-card { border-left: 5px solid #4caf50; background: #fff; padding: 12px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 14px; }
-    .history-date { font-size: 12px; color: #666; margin-bottom: 4px; }
-    .history-items { font-weight: bold; color: #333; line-height: 1.4; }
+    #toast { visibility: hidden; min-width: 200px; background-color: rgba(44, 62, 80, 0.95); color: #fff; text-align: center; border-radius: 30px; padding: 12px 20px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: bold; opacity: 0; transition: opacity 0.3s, bottom 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(5px); }
+    #toast.show { visibility: visible; opacity: 1; bottom: 90px; }
+
+    /* モーダル（確認画面）のオサレ化 */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 3000; align-items: center; justify-content: center; }
+    .modal-content { background: #fff; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto; }
+    .modal-content h3 { margin-top: 0; text-align: center; color: #2c3e50; font-size: 20px; border-bottom: 2px solid #f0f4f8; padding-bottom: 15px; }
+    .confirm-details { background: #f8f9fc; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #34495e; border: 1px solid #e0e4e8; }
+    .modal-btns { display: flex; gap: 12px; }
+    .modal-btns button { flex: 1; padding: 14px; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+    .btn-cancel { background: #e0e4e8; color: #5c6b7a; }
+    .btn-cancel:active { transform: scale(0.96); }
+    .btn-send { background: linear-gradient(135deg, #43a047, #66bb6a); color: #fff; box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3); }
+    .btn-send:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(67, 160, 71, 0.2); }
+    
+    .history-card { border-left: 6px solid #4caf50; background: #fff; padding: 16px; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); font-size: 14px; border: 1px solid rgba(0,0,0,0.02); }
+    .history-date { font-size: 12px; color: #7f8c8d; margin-bottom: 8px; font-weight: bold; }
+    .history-items { font-weight: bold; color: #2c3e50; line-height: 1.6; }
 
     @media (min-width: 768px) {
-      body { padding: 20px; padding-bottom: 80px; }
-      .header-container h2 { font-size: 24px; padding-top: 0; }
-      .logout-btn { top: 0; padding: 8px 15px; font-size: 14px; }
-      .shop-layout { gap: 20px; }
-      .sidebar { width: 220px; padding: 15px; top: 20px; max-height: 90vh; }
-      .sidebar h3 { font-size: 18px; text-align: left; }
-      .sidebar-user-box { padding: 10px; font-size: 14px; }
+      body { padding: 30px; padding-bottom: 80px; }
+      .header-container h2 { font-size: 28px; padding-top: 0; }
+      .logout-btn { top: 0; padding: 10px 20px; font-size: 14px; }
+      .shop-layout { gap: 25px; }
+      .sidebar { width: 220px; padding: 20px; top: 20px; max-height: 90vh; }
+      .sidebar h3 { font-size: 16px; text-align: left; margin-bottom: 20px; }
+      .sidebar-user-box { padding: 15px; font-size: 14px; margin-bottom: 25px; }
       #display-kaishu-name { display: inline; font-size: 16px; margin-top: 0; }
-      .category-btn { padding: 12px; font-size: 15px; text-align: left; border-radius: 8px; margin-bottom: 10px; }
-      .item { padding: 15px; }
-      .item h4 { font-size: 18px; }
-      .add-btn { padding: 12px; font-size: 16px; }
-      .quantity-box button { width: 44px; height: 44px; font-size: 24px; }
-      .quantity-box input { width: 60px; height: 44px; font-size: 18px; margin: 0 10px; }
-      .cart-item { flex-direction: row; }
+      .category-btn { padding: 14px; font-size: 14px; text-align: left; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+      .item { padding: 24px; }
+      .item h4 { font-size: 18px; margin-bottom: 15px; }
+      .add-btn { padding: 14px; font-size: 16px; }
+      .quantity-box button { width: 40px; height: 40px; font-size: 20px; }
+      .quantity-box input { width: 60px; height: 40px; font-size: 18px; margin: 0 10px; }
+      .cart-item { flex-direction: row; align-items: center; padding: 20px; }
       .cart-item-name { font-size: 16px; margin-bottom: 0; }
+      .cart-action-box { align-self: auto; padding: 6px; }
       .cart-action-box button { width: 36px; height: 36px; font-size: 18px; margin: 0 5px; }
-      .cart-action-box .cart-item-qty { width: 30px; font-size: 16px; }
-      .floating-cart { font-size: 18px; padding: 15px 20px; }
+      .cart-action-box .cart-item-qty { width: 40px; font-size: 16px; }
+      .floating-cart { font-size: 18px; padding: 16px 28px; bottom: 30px; right: 30px; }
     }
   </style>
 </head>
@@ -100,16 +122,15 @@
 
   <div id="login-screen">
     <h3>🔒 ログイン</h3>
-    <p style="font-size: 14px; color: #666;">会衆ごとのIDとパスワードを入力してください。</p>
+    <p style="font-size: 14px; color: #7f8c8d; margin-bottom: 20px;">会衆ごとのIDとパスワードを入力してください。</p>
     <input type="text" id="site-id" class="form-input" placeholder="ユーザーID (例: sample01)">
     <input type="password" id="site-password" class="form-input" placeholder="パスワード">
-    <button class="submit-btn" style="background: #2196f3; margin-top: 15px;" onclick="checkPassword()">ログイン</button>
+    <button class="submit-btn" style="background: linear-gradient(135deg, #1e88e5, #42a5f5); box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3); margin-top: 20px;" onclick="checkPassword()">ログイン</button>
     <p id="login-error" class="error-msg">IDまたはパスワードが間違っています。</p>
-    <p id="login-loading" class="error-msg" style="color:#2196f3;">確認中です…少々お待ちください。</p>
+    <p id="login-loading" class="error-msg" style="color:#1e88e5;">確認中です…少々お待ちください。</p>
   </div>
 
   <div id="main-app">
-    <!-- ★変更：ヘッダーの中にタイトルとログアウトボタンを横並びで配置したで！★ -->
     <div class="header-container">
       <h2 onclick="showPage('top-page')">📦 救援物資 依頼サイト</h2>
       <button class="logout-btn" onclick="logout()">ログアウト</button>
@@ -119,32 +140,33 @@
       
       <div class="sidebar">
         <div class="sidebar-user-box">
-          👤<span id="display-kaishu-name">ゲスト</span>
+          👤 <span id="display-kaishu-name">ゲスト</span>
         </div>
 
         <h3>🔍 カテゴリ</h3>
-        <button class="category-btn" style="background: #1e88e5;" onclick="showPage('drink-page')">🧃 飲料</button>
-        <button class="category-btn" style="background: #8d6e63;" onclick="showPage('rice-page')">🍚 お米</button>
-        <button class="category-btn" style="background: #ff7043;" onclick="showPage('retort-page')">🍛 レトルト</button>
-        <button class="category-btn" style="background: #4caf50;" onclick="showPage('pouch-page')">🥫 パウチ</button>
-        <button class="category-btn" style="background: #fbc02d; color: #333;" onclick="showPage('noodle-page')">🍜 麺類</button>
-        <button class="category-btn" style="background: #5e35b1;" onclick="showPage('snack-page')">🍪 おやつ</button>
-        <button class="category-btn" style="background: #66bb6a;" onclick="showPage('daily-page')">🧻 日用品</button>
-        <button class="category-btn" style="background: #0277bd;" onclick="showPage('kitchen-page')">🥢 キッチン</button>
+        <!-- ★変更：ボタンの背景色を上品な淡い色にして、文字色を濃くしたオサレ配色！★ -->
+        <button class="category-btn" style="background: #e3f2fd; color: #1565c0;" onclick="showPage('drink-page')">🧃 飲料</button>
+        <button class="category-btn" style="background: #efebe9; color: #4e342e;" onclick="showPage('rice-page')">🍚 お米</button>
+        <button class="category-btn" style="background: #fbe9e7; color: #d84315;" onclick="showPage('retort-page')">🍛 レトルト</button>
+        <button class="category-btn" style="background: #e8f5e9; color: #2e7d32;" onclick="showPage('pouch-page')">🥫 パウチ</button>
+        <button class="category-btn" style="background: #fffde7; color: #f57f17;" onclick="showPage('noodle-page')">🍜 麺類</button>
+        <button class="category-btn" style="background: #ede7f6; color: #4527a0;" onclick="showPage('snack-page')">🍪 おやつ</button>
+        <button class="category-btn" style="background: #e0f2f1; color: #00695c;" onclick="showPage('daily-page')">🧻 日用品</button>
+        <button class="category-btn" style="background: #eceff1; color: #455a64;" onclick="showPage('kitchen-page')">🥢 キッチン</button>
         
-        <button class="category-btn" style="background: #009688;" onclick="showPage('free-page')">💡 フリー依頼</button>
+        <button class="category-btn" style="background: #e0f7fa; color: #00838f; border: 1px solid #b2ebf2;" onclick="showPage('free-page')">💡 フリー依頼</button>
         
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-        <button class="category-btn" style="background: #e91e63;" onclick="showPage('cart-page')">🛒 カート</button>
-        <button class="category-btn" style="background: #9e9e9e;" onclick="fetchHistory()">📜 履歴</button>
+        <hr style="border: 0; border-top: 2px dashed #e0e4e8; margin: 20px 0;">
+        <button class="category-btn" style="background: #fce4ec; color: #c2185b;" onclick="showPage('cart-page')">🛒 カート</button>
+        <button class="category-btn" style="background: #f5f5f5; color: #616161;" onclick="fetchHistory()">📜 履歴</button>
       </div>
 
       <div class="main-content">
         
         <div id="top-page" class="page active">
-          <div class="item">
-            <h3 style="margin-top:0; font-size: 16px;">ご案内</h3>
-            <p style="font-size: 14px;">左のメニューから必要な物資のカテゴリをお選びください。</p>
+          <div class="item" style="text-align: center; padding: 40px 20px;">
+            <h3 style="margin-top:0; font-size: 18px; color: #1976d2;">ようこそ！</h3>
+            <p style="font-size: 15px; color: #5c6b7a; line-height: 1.6;">左のメニューから、必要な物資のカテゴリをお選びください。</p>
           </div>
         </div>
 
@@ -392,37 +414,37 @@
 
         <!-- ★フリー依頼ページ★ -->
         <div id="free-page" class="page">
-          <div class="item">
-            <h3 style="margin-top:0; color: #009688;">💡 フリー依頼</h3>
-            <p style="font-size: 13px; color: #666;">リストにない物資はこちらにご入力ください。<br>※入力後、必ず下の「まとめてカートに追加」ボタンを押してください。<br>※一番下の行に入力すると自動で行が追加されます。</p>
+          <div class="item" style="border: 2px solid #e0f7fa;">
+            <h3 style="margin-top:0; color: #00838f; font-size: 18px;">💡 フリー依頼</h3>
+            <p style="font-size: 13px; color: #5c6b7a; line-height: 1.6; background: #e0f7fa; padding: 10px; border-radius: 8px;">リストにない物資はこちらにご入力ください。<br>※入力後、必ず下の「まとめてカートに追加」ボタンを押してください。<br>※一番下の行に入力すると自動で行が追加されます。</p>
             
-            <div id="free-request-container">
-              <div class="quantity-box free-row" style="justify-content: flex-start;">
-                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+            <div id="free-request-container" style="margin-top: 15px;">
+              <div class="quantity-box free-row" style="justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0;">
+                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">
               </div>
-              <div class="quantity-box free-row" style="justify-content: flex-start;">
-                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+              <div class="quantity-box free-row" style="justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0;">
+                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">
               </div>
-              <div class="quantity-box free-row" style="justify-content: flex-start;">
-                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+              <div class="quantity-box free-row" style="justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0;">
+                <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+                <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">
               </div>
             </div>
             
-            <button class="submit-btn" style="background: #ff9800; margin-top: 15px;" onclick="addFreeCart()">まとめてカートに追加 ＋</button>
+            <button class="submit-btn" style="background: linear-gradient(135deg, #00acc1, #00838f); box-shadow: 0 4px 12px rgba(0, 131, 143, 0.3);" onclick="addFreeCart()">まとめてカートに追加 ＋</button>
           </div>
         </div>
 
         <!-- 🛒 カートページ -->
         <div id="cart-page" class="page">
           <div class="item">
-            <h3 style="margin-top:0;">🛒 カートの内容</h3>
+            <h3 style="margin-top:0; color: #c2185b; border-bottom: 2px solid #fce4ec; padding-bottom: 10px;">🛒 カートの内容</h3>
             <ul id="cart-list"></ul>
           </div>
           <div class="item">
-            <h3 style="margin-top:0;">📝 お届け先情報</h3>
+            <h3 style="margin-top:0; color: #2c3e50; border-bottom: 2px solid #f0f4f8; padding-bottom: 10px;">📝 お届け先情報</h3>
             <input type="text" id="name" class="form-input" placeholder="担当者のお名前" oninput="saveData()">
             <input type="tel" id="phone" class="form-input" placeholder="お電話番号" oninput="saveData()">
             <input type="text" id="address" class="form-input" placeholder="お届け先 ご住所 or ○○王国会館など" oninput="saveData()">
@@ -436,8 +458,8 @@
         <!-- 📜 履歴ページ -->
         <div id="history-page" class="page">
           <div class="item">
-            <h3 style="color: #4caf50; margin-top:0;">📜 過去の注文履歴</h3>
-            <div id="history-loading" style="text-align: center; color: #2196f3; padding: 20px; display: none;">
+            <h3 style="color: #4caf50; margin-top:0; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px;">📜 過去の注文履歴</h3>
+            <div id="history-loading" style="text-align: center; color: #4caf50; padding: 20px; display: none; font-weight: bold;">
               履歴を検索中です…少々お待ちください。🔍
             </div>
             <div id="history-content"></div>
@@ -463,7 +485,7 @@
   </div>
 
   <script>
-    // ★最新のGAS URLやで！★
+    // ★GASのURLは最新のままやで！★
     const gasUrl = "https://script.google.com/macros/s/AKfycbwKV8s6fWErOqOUdwEgKgaRGgVJK6mOsL-qN1zU12SFNV8HY8iuhl0QnKmXs8aQga6eqA/exec"; 
 
     let cart = {}; 
@@ -506,8 +528,12 @@
         let div = document.createElement('div');
         div.className = 'quantity-box free-row';
         div.style.justifyContent = 'flex-start';
-        div.innerHTML = `<input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-                         <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">`;
+        div.style.width = '100%';
+        div.style.boxSizing = 'border-box';
+        div.style.background = 'transparent';
+        div.style.padding = '0';
+        div.innerHTML = `<input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+                         <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">`;
         container.appendChild(div);
       }
     }
@@ -532,17 +558,17 @@
         showToast("フリー依頼をカートに追加しました。");
 
         document.getElementById('free-request-container').innerHTML = `
-          <div class="quantity-box free-row" style="justify-content: flex-start;">
-            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+          <div class="quantity-box free-row" style="justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0;">
+            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">
           </div>
-          <div class="quantity-box free-row" style="justify-content: flex-start;">
-            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+          <div class="quantity-box free-row" style="justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0;">
+            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">
           </div>
-          <div class="quantity-box free-row" style="justify-content: flex-start;">
-            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px;">
-            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 55px;">
+          <div class="quantity-box free-row" style="justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0;">
+            <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+            <input type="number" class="form-input free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">
           </div>
         `;
       } else {
@@ -584,7 +610,6 @@
       });
     }
 
-    // ★追加：ログアウトする魔法！★
     function logout() {
       if(confirm("ログアウトしますか？\n※カートの中身や入力内容もリセットされます。")) {
         localStorage.clear();
@@ -738,13 +763,13 @@
             `;
           });
         } else {
-          html = '<p style="text-align:center; color:#666;">まだ注文履歴はありません。📦</p>';
+          html = '<p style="text-align:center; color:#7f8c8d;">まだ注文履歴はありません。📦</p>';
         }
         document.getElementById('history-content').innerHTML = html;
       })
       .catch(err => {
         document.getElementById('history-loading').style.display = 'none';
-        document.getElementById('history-content').innerHTML = '<p style="color:red; text-align:center;">履歴の取得に失敗しました。</p>';
+        document.getElementById('history-content').innerHTML = '<p style="color:#e53935; text-align:center;">履歴の取得に失敗しました。</p>';
       });
     }
   </script>
