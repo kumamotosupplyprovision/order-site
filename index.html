@@ -15,10 +15,8 @@
     .error-msg { color: #f44336; font-size: 14px; margin-top: 10px; display: none; }
     #main-app { display: none; }
 
-    /* ★変更：スマホでも常に横並び（row）にする魔法★ */
     .shop-layout { display: flex; flex-direction: row; gap: 8px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
     
-    /* ★変更：スマホ用のコンパクトな左メニュー★ */
     .sidebar { width: 85px; flex-shrink: 0; background: #fff; padding: 10px 5px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 10px; max-height: 85vh; overflow-y: auto; }
     .sidebar h3 { margin-top: 0; font-size: 12px; text-align: center; margin-bottom: 10px; }
     
@@ -31,7 +29,6 @@
     .page { display: none; }
     .active { display: block; }
     
-    /* スマホ用のコンパクトな商品表示 */
     .item { background: #fff; padding: 10px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     .item h4 { margin-top: 0; margin-bottom: 8px; color: #333; font-size: 14px; line-height: 1.4; }
     
@@ -69,7 +66,6 @@
     .history-date { font-size: 12px; color: #666; margin-bottom: 4px; }
     .history-items { font-weight: bold; color: #333; line-height: 1.4; }
 
-    /* ★パソコン用の広い画面の時は、ゆったりサイズに戻すで！★ */
     @media (min-width: 768px) {
       body { padding: 20px; padding-bottom: 80px; }
       h2 { font-size: 24px; margin-bottom: 20px; }
@@ -96,19 +92,18 @@
 
   <div id="login-screen">
     <h3>🔒 ログイン</h3>
-    <p style="font-size: 14px; color: #666;">会衆ごとのIDとパスワードを入力してな。</p>
+    <p style="font-size: 14px; color: #666;">会衆ごとのIDとパスワードを入力してください。</p>
     <input type="text" id="site-id" class="form-input" placeholder="ユーザーID (例: kouda28)">
     <input type="password" id="site-password" class="form-input" placeholder="パスワード">
-    <button class="submit-btn" style="background: #2196f3; margin-top: 15px;" onclick="checkPassword()">中に入る 🚪</button>
-    <p id="login-error" class="error-msg">IDかパスワードがちゃうみたいやで💦</p>
-    <p id="login-loading" class="error-msg" style="color:#2196f3;">確認中やで…ちょっと待ってな！</p>
+    <button class="submit-btn" style="background: #2196f3; margin-top: 15px;" onclick="checkPassword()">ログイン</button>
+    <p id="login-error" class="error-msg">IDまたはパスワードが間違っています。</p>
+    <p id="login-loading" class="error-msg" style="color:#2196f3;">確認中です…少々お待ちください。</p>
   </div>
 
   <div id="main-app">
-    <h2>📦 救援物資 依頼ページ</h2>
+    <h2>📦 救援物資 依頼フォーム</h2>
     <div class="shop-layout">
       
-      <!-- サイドバー -->
       <div class="sidebar">
         <div class="sidebar-user-box">
           👤<span id="display-kaishu-name">ゲスト</span>
@@ -129,13 +124,12 @@
         <button class="category-btn" style="background: #9e9e9e;" onclick="fetchHistory()">📜 履歴</button>
       </div>
 
-      <!-- メインコンテンツ -->
       <div class="main-content">
         
         <div id="top-page" class="page active">
           <div class="item">
-            <h3 style="margin-top:0; font-size: 16px;">いらっしゃいませ！</h3>
-            <p style="font-size: 14px;">左のメニューから必要な物資のカテゴリを選んでな！</p>
+            <h3 style="margin-top:0; font-size: 16px;">ご案内</h3>
+            <p style="font-size: 14px;">左のメニューから必要な物資のカテゴリをお選びください。</p>
           </div>
         </div>
 
@@ -146,84 +140,84 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink1', -1)">-</button><input type="number" id="qty-drink1" value="1" min="1"><button onclick="changeQty('qty-drink1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('水2L(6本入り)', 'qty-drink1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('水2L(6本入り)', 'qty-drink1')">カートに追加</button>
           </div>
           <div class="item">
             <h4>水500ml(24本入り) - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink2', -1)">-</button><input type="number" id="qty-drink2" value="1" min="1"><button onclick="changeQty('qty-drink2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('水500ml(24本入り)', 'qty-drink2')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('水500ml(24本入り)', 'qty-drink2')">カートに追加</button>
           </div>
           <div class="item">
             <h4>お茶2L(6本入り) - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink3', -1)">-</button><input type="number" id="qty-drink3" value="1" min="1"><button onclick="changeQty('qty-drink3', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('お茶2L(6本入り)', 'qty-drink3')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('お茶2L(6本入り)', 'qty-drink3')">カートに追加</button>
           </div>
           <div class="item">
             <h4>お茶500ml(24本入り) - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink4', -1)">-</button><input type="number" id="qty-drink4" value="1" min="1"><button onclick="changeQty('qty-drink4', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('お茶500ml(24本入り)', 'qty-drink4')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('お茶500ml(24本入り)', 'qty-drink4')">カートに追加</button>
           </div>
           <div class="item">
             <h4>スポドリ2L - 本</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink5', -1)">-</button><input type="number" id="qty-drink5" value="1" min="1"><button onclick="changeQty('qty-drink5', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('スポドリ2L', 'qty-drink5')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('スポドリ2L', 'qty-drink5')">カートに追加</button>
           </div>
           <div class="item">
             <h4>スポドリ500ml - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink6', -1)">-</button><input type="number" id="qty-drink6" value="1" min="1"><button onclick="changeQty('qty-drink6', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('スポドリ500ml', 'qty-drink6')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('スポドリ500ml', 'qty-drink6')">カートに追加</button>
           </div>
           <div class="item">
             <h4>ジュース500ml - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink7', -1)">-</button><input type="number" id="qty-drink7" value="1" min="1"><button onclick="changeQty('qty-drink7', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('ジュース500ml', 'qty-drink7')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('ジュース500ml', 'qty-drink7')">カートに追加</button>
           </div>
           <div class="item">
             <h4>炭酸飲料 500ml - 箱</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink8', -1)">-</button><input type="number" id="qty-drink8" value="1" min="1"><button onclick="changeQty('qty-drink8', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('炭酸飲料500ml', 'qty-drink8')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('炭酸飲料500ml', 'qty-drink8')">カートに追加</button>
           </div>
           <div class="item">
             <h4>コーヒー飲料500ml〜1L - 本</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink9', -1)">-</button><input type="number" id="qty-drink9" value="1" min="1"><button onclick="changeQty('qty-drink9', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('コーヒー飲料500ml〜1L', 'qty-drink9')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('コーヒー飲料500ml〜1L', 'qty-drink9')">カートに追加</button>
           </div>
           <div class="item">
             <h4>紅茶500ml - 本</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink10', -1)">-</button><input type="number" id="qty-drink10" value="1" min="1"><button onclick="changeQty('qty-drink10', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('紅茶500ml', 'qty-drink10')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('紅茶500ml', 'qty-drink10')">カートに追加</button>
           </div>
           <div class="item">
             <h4>野菜ジュース(12個入り) - パック</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink11', -1)">-</button><input type="number" id="qty-drink11" value="1" min="1"><button onclick="changeQty('qty-drink11', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('野菜ジュース(12個入り)', 'qty-drink11')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('野菜ジュース(12個入り)', 'qty-drink11')">カートに追加</button>
           </div>
           <div class="item">
             <h4>果物ジュース - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-drink12', -1)">-</button><input type="number" id="qty-drink12" value="1" min="1"><button onclick="changeQty('qty-drink12', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('果物ジュース', 'qty-drink12')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('果物ジュース', 'qty-drink12')">カートに追加</button>
           </div>
         </div>
 
@@ -234,28 +228,28 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice1', -1)">-</button><input type="number" id="qty-rice1" value="1" min="1"><button onclick="changeQty('qty-rice1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('米 5kg', 'qty-rice1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('米 5kg', 'qty-rice1')">カートに追加</button>
           </div>
           <div class="item">
             <h4>米 3kg - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice2', -1)">-</button><input type="number" id="qty-rice2" value="1" min="1"><button onclick="changeQty('qty-rice2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('米 3kg', 'qty-rice2')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('米 3kg', 'qty-rice2')">カートに追加</button>
           </div>
           <div class="item">
             <h4>米 2kg - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice3', -1)">-</button><input type="number" id="qty-rice3" value="1" min="1"><button onclick="changeQty('qty-rice3', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('米 2kg', 'qty-rice3')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('米 2kg', 'qty-rice3')">カートに追加</button>
           </div>
           <div class="item">
             <h4>パックごはん - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-rice4', -1)">-</button><input type="number" id="qty-rice4" value="1" min="1"><button onclick="changeQty('qty-rice4', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('パックごはん', 'qty-rice4')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('パックごはん', 'qty-rice4')">カートに追加</button>
           </div>
         </div>
 
@@ -266,14 +260,14 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-retort1', -1)">-</button><input type="number" id="qty-retort1" value="1" min="1"><button onclick="changeQty('qty-retort1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('レンジ対応品', 'qty-retort1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('レンジ対応品', 'qty-retort1')">カートに追加</button>
           </div>
           <div class="item">
             <h4>味噌汁(食数で入力) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-retort2', -1)">-</button><input type="number" id="qty-retort2" value="1" min="1"><button onclick="changeQty('qty-retort2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('味噌汁', 'qty-retort2')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('味噌汁', 'qty-retort2')">カートに追加</button>
           </div>
         </div>
 
@@ -284,14 +278,14 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-pouch1', -1)">-</button><input type="number" id="qty-pouch1" value="1" min="1"><button onclick="changeQty('qty-pouch1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('魚・肉パウチ', 'qty-pouch1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('魚・肉パウチ', 'qty-pouch1')">カートに追加</button>
           </div>
           <div class="item">
             <h4>フルーツパウチ - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-pouch2', -1)">-</button><input type="number" id="qty-pouch2" value="1" min="1"><button onclick="changeQty('qty-pouch2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('フルーツパウチ', 'qty-pouch2')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('フルーツパウチ', 'qty-pouch2')">カートに追加</button>
           </div>
         </div>
 
@@ -302,7 +296,7 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-noodle1', -1)">-</button><input type="number" id="qty-noodle1" value="1" min="1"><button onclick="changeQty('qty-noodle1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('カップ麺', 'qty-noodle1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('カップ麺', 'qty-noodle1')">カートに追加</button>
           </div>
         </div>
 
@@ -313,14 +307,14 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-snack1', -1)">-</button><input type="number" id="qty-snack1" value="1" min="1"><button onclick="changeQty('qty-snack1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('おやつ(塩系)', 'qty-snack1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('おやつ(塩系)', 'qty-snack1')">カートに追加</button>
           </div>
           <div class="item">
             <h4>甘い系(飴、クッキーなど) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-snack2', -1)">-</button><input type="number" id="qty-snack2" value="1" min="1"><button onclick="changeQty('qty-snack2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('おやつ(甘い系)', 'qty-snack2')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('おやつ(甘い系)', 'qty-snack2')">カートに追加</button>
           </div>
         </div>
 
@@ -331,7 +325,7 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-daily1', -1)">-</button><input type="number" id="qty-daily1" value="1" min="1"><button onclick="changeQty('qty-daily1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('トイレットペーパー', 'qty-daily1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('トイレットペーパー', 'qty-daily1')">カートに追加</button>
           </div>
         </div>
 
@@ -342,56 +336,56 @@
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit1', -1)">-</button><input type="number" id="qty-kit1" value="1" min="1"><button onclick="changeQty('qty-kit1', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('割り箸', 'qty-kit1')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('割り箸', 'qty-kit1')">カートに追加</button>
           </div>
           <div class="item">
             <h4>使い捨て紙皿 - 枚数</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit2', -1)">-</button><input type="number" id="qty-kit2" value="1" min="1"><button onclick="changeQty('qty-kit2', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('使い捨て紙皿', 'qty-kit2')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('使い捨て紙皿', 'qty-kit2')">カートに追加</button>
           </div>
           <div class="item">
             <h4>使い捨て紙コップ(冷) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit3', -1)">-</button><input type="number" id="qty-kit3" value="1" min="1"><button onclick="changeQty('qty-kit3', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('紙コップ(冷)', 'qty-kit3')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('紙コップ(冷)', 'qty-kit3')">カートに追加</button>
           </div>
           <div class="item">
             <h4>使い捨て紙コップ(温) - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit4', -1)">-</button><input type="number" id="qty-kit4" value="1" min="1"><button onclick="changeQty('qty-kit4', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('紙コップ(温)', 'qty-kit4')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('紙コップ(温)', 'qty-kit4')">カートに追加</button>
           </div>
           <div class="item">
             <h4>使い捨てスプーン - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit5', -1)">-</button><input type="number" id="qty-kit5" value="1" min="1"><button onclick="changeQty('qty-kit5', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('使い捨てスプーン', 'qty-kit5')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('使い捨てスプーン', 'qty-kit5')">カートに追加</button>
           </div>
           <div class="item">
             <h4>使い捨てフォーク - 個</h4>
             <div class="quantity-box">
               <button onclick="changeQty('qty-kit6', -1)">-</button><input type="number" id="qty-kit6" value="1" min="1"><button onclick="changeQty('qty-kit6', 1)">+</button>
             </div>
-            <button class="add-btn" onclick="addCart('使い捨てフォーク', 'qty-kit6')">追加 ＋</button>
+            <button class="add-btn" onclick="addCart('使い捨てフォーク', 'qty-kit6')">カートに追加</button>
           </div>
         </div>
 
         <!-- 🛒 カートページ -->
         <div id="cart-page" class="page">
           <div class="item">
-            <h3 style="margin-top:0;">🛒 カートの中身</h3>
+            <h3 style="margin-top:0;">🛒 カートの内容</h3>
             <ul id="cart-list"></ul>
           </div>
           <div class="item">
             <h3 style="margin-top:0;">📝 お届け先情報</h3>
             <input type="text" id="name" class="form-input" placeholder="お名前・団体名" oninput="saveData()">
             <input type="text" id="address" class="form-input" placeholder="お届け先の住所" oninput="saveData()">
-            <button class="submit-btn" onclick="showConfirm()">依頼を確認する 📝</button>
+            <button class="submit-btn" onclick="showConfirm()">依頼内容を確認する</button>
           </div>
         </div>
 
@@ -400,7 +394,7 @@
           <div class="item">
             <h3 style="color: #4caf50; margin-top:0;">📜 過去の注文履歴</h3>
             <div id="history-loading" style="text-align: center; color: #2196f3; padding: 20px; display: none;">
-              履歴を探してるで…ちょっと待ってな！🔍
+              履歴を検索中です…少々お待ちください。🔍
             </div>
             <div id="history-content"></div>
           </div>
@@ -411,15 +405,15 @@
     <div class="floating-cart" onclick="showPage('cart-page')">🛒 カート (<span id="cart-count">0</span>)</div>
   </div> 
 
-  <div id="toast">メッセージがここに出るで</div>
+  <div id="toast">メッセージ</div>
 
   <div id="confirm-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3>ほんまにこれで送る？👀</h3>
+      <h3>以下の内容で送信しますか？</h3>
       <div class="confirm-details" id="confirm-text"></div>
       <div class="modal-btns">
-        <button class="btn-cancel" onclick="closeConfirm()">やり直す</button>
-        <button class="btn-send" onclick="executeOrder()">送信する！ ✈️</button>
+        <button class="btn-cancel" onclick="closeConfirm()">キャンセル</button>
+        <button class="btn-send" onclick="executeOrder()">送信する</button>
       </div>
     </div>
   </div>
@@ -456,7 +450,7 @@
       let inputId = document.getElementById('site-id').value;
       let inputPass = document.getElementById('site-password').value;
       
-      if (!inputId || !inputPass) { alert("IDとパスワードを両方入力してな！"); return; }
+      if (!inputId || !inputPass) { alert("IDとパスワードの両方を入力してください。"); return; }
 
       document.getElementById('login-error').style.display = 'none';
       document.getElementById('login-loading').style.display = 'block';
@@ -482,7 +476,7 @@
       })
       .catch(error => {
         document.getElementById('login-loading').style.display = 'none';
-        alert("通信エラーや💦 もう一回試してみて！");
+        alert("通信エラーが発生しました。もう一度お試しください。");
       });
     }
 
@@ -514,7 +508,7 @@
       let qty = parseInt(document.getElementById(inputId).value) || 1;
       cart[itemName] = (cart[itemName] || 0) + qty;
       recalcTotal(); updateCartView(); saveData(); 
-      showToast(itemName + " を " + qty + "個 カートに入れたで！");
+      showToast(itemName + " を " + qty + "個 カートに追加しました。");
       document.getElementById(inputId).value = 1;
     }
 
@@ -529,7 +523,7 @@
     function updateCartView() {
       document.getElementById('cart-count').innerText = totalItems;
       let list = document.getElementById('cart-list'); list.innerHTML = '';
-      if (Object.keys(cart).length === 0) { list.innerHTML = 'まだ何も選ばれてへんで！'; return; }
+      if (Object.keys(cart).length === 0) { list.innerHTML = 'まだ何も選択されていません。'; return; }
       for (let item in cart) {
         list.innerHTML += `<li class="cart-item"><span class="cart-item-name">${item}</span><div class="cart-action-box"><button onclick="changeCartQty('${item}', -1)">-</button><span class="cart-item-qty">${cart[item]}</span><button onclick="changeCartQty('${item}', 1)">+</button><button class="delete-btn" onclick="removeFromCart('${item}')">🗑️</button></div></li>`;
       }
@@ -538,7 +532,7 @@
     function showConfirm() {
       let name = document.getElementById('name').value;
       let address = document.getElementById('address').value;
-      if (!name || !address || totalItems === 0) { alert("お名前と住所を入力して、物資を1つ以上選んでな！"); return; }
+      if (!name || !address || totalItems === 0) { alert("お名前と住所を入力し、物資を1つ以上選択してください。"); return; }
       let itemsText = Object.entries(cart).map(([item, qty]) => `・${item} : ${qty}個`).join('<br>');
       document.getElementById('confirm-text').innerHTML = `<strong>👤 お名前：</strong> ${name}<br><strong>🏠 ご住所：</strong> ${address}<br><br><strong>📦 ご依頼の物資：</strong><br>${itemsText}`;
       document.getElementById('confirm-modal').style.display = 'flex';
@@ -552,17 +546,17 @@
       let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
       let data = { action: "order", name: name, address: address, items: itemsText };
 
-      closeConfirm(); showToast("送信中やで…ちょっと待ってな！");
+      closeConfirm(); showToast("送信中です…少々お待ちください。");
 
       fetch(gasUrl, {
         method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(data)
       })
       .then(response => {
-        alert("無事に送信できたで！スプレッドシートを見てみてな！");
+        alert("送信が完了しました。ご依頼ありがとうございました。");
         cart = {}; document.getElementById('address').value = '';
         saveData(); recalcTotal(); updateCartView(); showPage('top-page'); 
       })
-      .catch(error => { alert("ごめん、通信エラーみたいや💦 もう一回試してみて！"); });
+      .catch(error => { alert("通信エラーが発生しました。もう一度お試しください。"); });
     }
 
     function fetchHistory() {
@@ -594,13 +588,13 @@
             `;
           });
         } else {
-          html = '<p style="text-align:center; color:#666;">まだ注文履歴はないみたいやで！📦</p>';
+          html = '<p style="text-align:center; color:#666;">まだ注文履歴はありません。📦</p>';
         }
         document.getElementById('history-content').innerHTML = html;
       })
       .catch(err => {
         document.getElementById('history-loading').style.display = 'none';
-        document.getElementById('history-content').innerHTML = '<p style="color:red; text-align:center;">ごめん、うまく履歴取れんかった💦</p>';
+        document.getElementById('history-content').innerHTML = '<p style="color:red; text-align:center;">履歴の取得に失敗しました。</p>';
       });
     }
   </script>
