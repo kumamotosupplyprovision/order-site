@@ -60,7 +60,6 @@
     .quantity-box button:active { transform: scale(0.9); background: #e0e4e8; }
     .quantity-box input { width: 45px; height: 34px; text-align: center; font-size: 16px; font-weight: bold; background: transparent; border: none; margin: 0 5px; color: #2c3e50; }
 
-    /* ★追加：カメラボタンのオサレデザイン★ */
     .img-btn { flex-shrink: 0; width: 42px; height: 42px; background: #e0e4e8; color: #2c3e50; border: none; border-radius: 12px; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; margin-right: 8px; transition: all 0.2s ease; }
     .img-btn:active { transform: scale(0.9); }
 
@@ -163,6 +162,7 @@
           </div>
         </div>
 
+        <!-- 飲料など既存のページ -->
         <div id="drink-page" class="page">
           <div class="item"><h4>水2L(6本入り) - 箱</h4><div class="quantity-box"><button onclick="changeQty('qty-drink1', -1)">-</button><input type="number" id="qty-drink1" value="1" min="1"><button onclick="changeQty('qty-drink1', 1)">+</button></div><button class="add-btn" onclick="addCart('水2L(6本入り)', 'qty-drink1')">カートに追加</button></div>
           <div class="item"><h4>水500ml(24本入り) - 箱</h4><div class="quantity-box"><button onclick="changeQty('qty-drink2', -1)">-</button><input type="number" id="qty-drink2" value="1" min="1"><button onclick="changeQty('qty-drink2', 1)">+</button></div><button class="add-btn" onclick="addCart('水500ml(24本入り)', 'qty-drink2')">カートに追加</button></div>
@@ -240,7 +240,9 @@
 
       </div> 
     </div> 
-    <div class="floating-cart" onclick="showPage('cart-page', document.querySelector('.category-btn[onclick*=\\'cart-page\\']'))">🛒 カート (<span id="cart-count">0</span>)</div>
+    
+    <!-- ★修正：フローティングカートのボタンを超シンプルに戻して復活させたで！★ -->
+    <div class="floating-cart" onclick="showPage('cart-page')">🛒 カート (<span id="cart-count">0</span>)</div>
   </div> 
 
   <div id="toast">メッセージ</div>
@@ -257,8 +259,8 @@
   </div>
 
   <script>
-    // ★新しいGASのURLを入れたで！★
-    const gasUrl = "https://script.google.com/macros/s/AKfycby-SXpWmxiy4XpZYGweRr0V6eZEJbNNvSfq_LeG63fAGCZ1nI6djCYcVKj1JbP74pAaKA/exec"; 
+    // ★新しいGASのURLやで！デプロイし直したら貼り替えてな！★
+    const gasUrl = "https://script.google.com/macros/s/AKfycbzclKV0eA2ypuCIo5h2ai73TTNP5_tW787uuOj9k_t1FOiF6Pdct3exBYeeROtDRMtdSg/exec"; 
 
     let cart = {}; 
     let cartImages = {}; 
@@ -272,11 +274,6 @@
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         document.getElementById('display-kaishu-name').innerText = kaishuName;
-        
-        let savedPass = localStorage.getItem('rescueUserPass');
-        if (savedPass) document.getElementById('site-password').value = savedPass;
-        let savedId = localStorage.getItem('rescueUserId');
-        if (savedId) document.getElementById('site-id').value = savedId;
       }
 
       let savedCart = localStorage.getItem('rescueCart');
@@ -413,8 +410,6 @@
         if (data.result === "success") {
           localStorage.setItem('rescueLoggedIn', 'true');
           localStorage.setItem('rescueKaishuName', data.kaishuName);
-          localStorage.setItem('rescueUserId', inputId);
-          localStorage.setItem('rescueUserPass', inputPass);
           
           document.getElementById('display-kaishu-name').innerText = data.kaishuName;
           saveData();
@@ -466,6 +461,7 @@
       if (btnElement) {
         btnElement.classList.add('active-menu');
       } else {
+        // ★プログラム側で賢くハイライトさせる処理★
         let targetBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(pageId));
         if(targetBtn) targetBtn.classList.add('active-menu');
       }
@@ -543,6 +539,7 @@
 
     function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
 
+    // ★修正：注文の時にパスワードを送る処理を削ってスッキリさせたで！★
     function executeOrder() {
       let name = document.getElementById('name').value;
       let phone = document.getElementById('phone').value;
@@ -551,8 +548,6 @@
       
       let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
       let kaishu = localStorage.getItem('rescueKaishuName') || "";
-      let userId = localStorage.getItem('rescueUserId');
-      let userPass = localStorage.getItem('rescueUserPass');
       
       let imagesArray = [];
       for (let item in cartImages) {
@@ -563,7 +558,7 @@
       }
       
       let data = { 
-        action: "order", userId: userId, password: userPass, name: name, 
+        action: "order", name: name, 
         phone: phone, address: address, items: itemsText, comment: comment, 
         kaishuName: kaishu,
         images: imagesArray
@@ -594,19 +589,18 @@
       });
     }
 
+    // ★修正：履歴の時もパスワードを送る処理を削ったで！★
     function fetchHistory(btnElement = null) {
       showPage('history-page', btnElement); 
       let kaishuName = localStorage.getItem('rescueKaishuName');
-      let userId = localStorage.getItem('rescueUserId');
-      let userPass = localStorage.getItem('rescueUserPass');
-      if (!kaishuName || !userId || !userPass) return;
+      if (!kaishuName) return;
 
       document.getElementById('history-content').innerHTML = '';
       document.getElementById('history-loading').style.display = 'block';
 
       fetch(gasUrl, {
         method: "POST", headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: "history", userId: userId, password: userPass, name: kaishuName })
+        body: JSON.stringify({ action: "history", name: kaishuName })
       })
       .then(res => res.json())
       .then(data => {
