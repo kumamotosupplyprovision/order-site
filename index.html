@@ -13,7 +13,6 @@
     
     .header-icon { background: linear-gradient(135deg, #1e88e5, #42a5f5); color: white; width: 36px; height: 36px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3); }
     
-    /* ★変更：扉マークを消して、スッキリした文字だけのログアウトボタンに！★ */
     .logout-btn { background: #f0f4f8; color: #5c6b7a; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
     .logout-btn:active { transform: scale(0.95); background: #e0e4e8; color: #e53935; }
 
@@ -24,7 +23,6 @@
     .error-msg { color: #e53935; font-size: 14px; margin-top: 10px; display: none; font-weight: bold; }
     #main-app { display: none; }
 
-    /* ★追加：クルクル回るローディングアニメーションの魔法！★ */
     .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(0, 0, 0, 0.1); border-radius: 50%; border-top-color: currentColor; animation: spin 1s ease-in-out infinite; vertical-align: middle; margin-right: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -39,7 +37,6 @@
     .category-btn { border: none; padding: 12px 4px; margin-bottom: 8px; width: 100%; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.3; transition: transform 0.2s ease, filter 0.2s, box-shadow 0.2s; }
     .category-btn:active { transform: scale(0.95); filter: brightness(0.95); }
     
-    /* ★追加：今開いてるメニューを目立たせるハイライト機能の魔法！★ */
     .category-btn.active-menu { box-shadow: inset 0 0 0 2px rgba(44, 62, 80, 0.6); filter: brightness(0.92); transform: scale(0.98); }
     
     .main-content { flex: 1; min-width: 0; }
@@ -129,7 +126,6 @@
     <input type="password" id="site-password" class="form-input" placeholder="パスワード">
     <button class="submit-btn" style="background: linear-gradient(135deg, #1e88e5, #42a5f5); box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3); margin-top: 20px;" onclick="checkPassword()">ログイン</button>
     <p id="login-error" class="error-msg">IDまたはパスワードが間違っています。</p>
-    <!-- ★追加：ログイン確認中にもクルクル回るスピナー！★ -->
     <p id="login-loading" class="error-msg" style="color:#1e88e5;"><span class="spinner" style="border-top-color:#1e88e5;"></span>確認中です…少々お待ちください。</p>
   </div>
 
@@ -138,7 +134,6 @@
       <h2 onclick="showPage('top-page')">
         <span class="header-icon">📦</span>救援物資 依頼サイト
       </h2>
-      <!-- ★変更：扉マークを消したシンプルなログアウトボタン！★ -->
       <button class="logout-btn" onclick="logout()">ログアウト</button>
     </div>
     
@@ -150,21 +145,20 @@
         </div>
 
         <h3>🔍 カテゴリ</h3>
-        <!-- ★変更：ボタンを押した時に「this（自分自身）」の情報を送ってハイライトさせる魔法！★ -->
-        <button class="category-btn" style="background: #e3f2fd; color: #1565c0;" onclick="showPage('drink-page', this)">🧃 飲料</button>
-        <button class="category-btn" style="background: #efebe9; color: #4e342e;" onclick="showPage('rice-page', this)">🍚 お米</button>
-        <button class="category-btn" style="background: #fbe9e7; color: #d84315;" onclick="showPage('retort-page', this)">🍛 レトルト</button>
-        <button class="category-btn" style="background: #e8f5e9; color: #2e7d32;" onclick="showPage('pouch-page', this)">🥫 パウチ</button>
-        <button class="category-btn" style="background: #fffde7; color: #f57f17;" onclick="showPage('noodle-page', this)">🍜 麺類</button>
-        <button class="category-btn" style="background: #ede7f6; color: #4527a0;" onclick="showPage('snack-page', this)">🍪 おやつ</button>
-        <button class="category-btn" style="background: #e0f2f1; color: #00695c;" onclick="showPage('daily-page', this)">🧻 日用品</button>
-        <button class="category-btn" style="background: #eceff1; color: #455a64;" onclick="showPage('kitchen-page', this)">🥢 キッチン</button>
+        <button class="category-btn" style="background: #e3f2fd; color: #1565c0;" onclick="showPage('drink-page')">🧃 飲料</button>
+        <button class="category-btn" style="background: #efebe9; color: #4e342e;" onclick="showPage('rice-page')">🍚 お米</button>
+        <button class="category-btn" style="background: #fbe9e7; color: #d84315;" onclick="showPage('retort-page')">🍛 レトルト</button>
+        <button class="category-btn" style="background: #e8f5e9; color: #2e7d32;" onclick="showPage('pouch-page')">🥫 パウチ</button>
+        <button class="category-btn" style="background: #fffde7; color: #f57f17;" onclick="showPage('noodle-page')">🍜 麺類</button>
+        <button class="category-btn" style="background: #ede7f6; color: #4527a0;" onclick="showPage('snack-page')">🍪 おやつ</button>
+        <button class="category-btn" style="background: #e0f2f1; color: #00695c;" onclick="showPage('daily-page')">🧻 日用品</button>
+        <button class="category-btn" style="background: #eceff1; color: #455a64;" onclick="showPage('kitchen-page')">🥢 キッチン</button>
         
-        <button class="category-btn" style="background: #e0f7fa; color: #00838f; border: 1px solid #b2ebf2;" onclick="showPage('free-page', this)">💡 フリー依頼</button>
+        <button class="category-btn" style="background: #e0f7fa; color: #00838f; border: 1px solid #b2ebf2;" onclick="showPage('free-page')">💡 フリー依頼</button>
         
         <hr style="border: 0; border-top: 2px dashed #e0e4e8; margin: 20px 0;">
-        <button class="category-btn" style="background: #fce4ec; color: #c2185b;" onclick="showPage('cart-page', this)">🛒 カート</button>
-        <button class="category-btn" style="background: #f5f5f5; color: #616161;" onclick="fetchHistory(this)">📜 履歴</button>
+        <button class="category-btn" style="background: #fce4ec; color: #c2185b;" onclick="showPage('cart-page')">🛒 カート</button>
+        <button class="category-btn" style="background: #f5f5f5; color: #616161;" onclick="fetchHistory()">📜 履歴</button>
       </div>
 
       <div class="main-content">
@@ -176,7 +170,6 @@
           </div>
         </div>
 
-        <!-- 🧃 飲料ページ -->
         <div id="drink-page" class="page">
           <div class="item">
             <h4>水2L(6本入り) - 箱</h4>
@@ -264,7 +257,6 @@
           </div>
         </div>
 
-        <!-- 🍚 お米ページ -->
         <div id="rice-page" class="page">
           <div class="item">
             <h4>米 5kg - 個</h4>
@@ -296,7 +288,6 @@
           </div>
         </div>
 
-        <!-- 🍛 レトルトページ -->
         <div id="retort-page" class="page">
           <div class="item">
             <h4>レンジ対応品(カレーなど) - 個</h4>
@@ -314,7 +305,6 @@
           </div>
         </div>
 
-        <!-- 🥫 パウチページ -->
         <div id="pouch-page" class="page">
           <div class="item">
             <h4>魚パウチ・肉パウチ - 個</h4>
@@ -332,7 +322,6 @@
           </div>
         </div>
 
-        <!-- 🍜 麺類ページ -->
         <div id="noodle-page" class="page">
           <div class="item">
             <h4>カップ麺 - 個</h4>
@@ -343,7 +332,6 @@
           </div>
         </div>
 
-        <!-- 🍪 おやつページ -->
         <div id="snack-page" class="page">
           <div class="item">
             <h4>塩系(煎餅、ポテチなど) - 個</h4>
@@ -361,7 +349,6 @@
           </div>
         </div>
 
-        <!-- 🧻 日用品ページ -->
         <div id="daily-page" class="page">
           <div class="item">
             <h4>トイレットペーパー12個入 - 袋</h4>
@@ -372,7 +359,6 @@
           </div>
         </div>
 
-        <!-- 🥢 キッチンページ -->
         <div id="kitchen-page" class="page">
           <div class="item">
             <h4>割り箸 - 本数</h4>
@@ -418,7 +404,6 @@
           </div>
         </div>
 
-        <!-- ★フリー依頼ページ★ -->
         <div id="free-page" class="page">
           <div class="item" style="border: 2px solid #e0f7fa;">
             <h3 style="margin-top:0; color: #00838f; font-size: 18px;">💡 フリー依頼</h3>
@@ -443,7 +428,6 @@
           </div>
         </div>
 
-        <!-- 🛒 カートページ -->
         <div id="cart-page" class="page">
           <div class="item">
             <h3 style="margin-top:0; color: #c2185b; border-bottom: 2px solid #fce4ec; padding-bottom: 10px;">🛒 カートの内容</h3>
@@ -461,11 +445,9 @@
           </div>
         </div>
 
-        <!-- 📜 履歴ページ -->
         <div id="history-page" class="page">
           <div class="item">
             <h3 style="color: #4caf50; margin-top:0; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px;">📜 過去の注文履歴</h3>
-            <!-- ★追加：履歴取得中のクルクルスピナー！★ -->
             <div id="history-loading" style="text-align: center; color: #4caf50; padding: 20px; display: none; font-weight: bold;">
               <span class="spinner" style="border-top-color:#4caf50;"></span>履歴を検索中です…少々お待ちください。
             </div>
@@ -475,8 +457,8 @@
 
       </div> 
     </div> 
-    <!-- ★右下のフローティングカートボタンにも、アイコンクリックで動作するように少し工夫を★ -->
-    <div class="floating-cart" onclick="showPage('cart-page', document.querySelector('.category-btn[onclick*=\\'cart-page\\']'))">🛒 カート (<span id="cart-count">0</span>)</div>
+    <!-- ★変更：フローティングカートのボタンを超シンプルにして、プログラム側で賢く探すようにしたで！★ -->
+    <div class="floating-cart" onclick="showPage('cart-page')">🛒 カート (<span id="cart-count">0</span>)</div>
   </div> 
 
   <div id="toast">メッセージ</div>
@@ -506,6 +488,15 @@
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
         document.getElementById('display-kaishu-name').innerText = kaishuName;
+        
+        let savedPass = localStorage.getItem('rescueUserPass');
+        if (savedPass) {
+          document.getElementById('site-password').value = savedPass;
+        }
+        let savedId = localStorage.getItem('rescueUserId');
+        if (savedId) {
+          document.getElementById('site-id').value = savedId;
+        }
       }
 
       let savedCart = localStorage.getItem('rescueCart');
@@ -602,12 +593,15 @@
         if (data.result === "success") {
           localStorage.setItem('rescueLoggedIn', 'true');
           localStorage.setItem('rescueKaishuName', data.kaishuName);
-          document.getElementById('display-kaishu-name').innerText = data.kaishuName;
+          localStorage.setItem('rescueUserId', inputId);
+          localStorage.setItem('rescueUserPass', inputPass);
           
+          document.getElementById('display-kaishu-name').innerText = data.kaishuName;
           saveData();
           document.getElementById('login-screen').style.display = 'none';
           document.getElementById('main-app').style.display = 'block';
         } else {
+          document.getElementById('login-error').innerText = data.message || "IDまたはパスワードが間違っています。";
           document.getElementById('login-error').style.display = 'block';
         }
       })
@@ -643,7 +637,7 @@
       localStorage.setItem('rescueComment', document.getElementById('order-comment').value);
     }
 
-    // ★変更：引数に自分が押されたボタンの情報(btnElement)を受け取って、色を濃くするハイライト魔法！★
+    // ★変更：もっと賢いページ切り替えとハイライト魔法！★
     function showPage(pageId, btnElement = null) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
@@ -651,9 +645,16 @@
       
       // 一旦すべてのボタンからハイライトを消す
       document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active-menu'));
-      // 押されたボタンにだけハイライトをつける！
+      
       if (btnElement) {
+        // ボタンが直接渡されたら、それにハイライトをつける
         btnElement.classList.add('active-menu');
+      } else {
+        // フローティングカートみたいに直接ボタンが渡されんかった時は、自分で「🛒 カート」ボタンを探してハイライトする！
+        let targetBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(pageId));
+        if(targetBtn) {
+          targetBtn.classList.add('active-menu');
+        }
       }
     }
 
@@ -663,7 +664,6 @@
       input.value = newVal < 1 ? 1 : newVal;
     }
 
-    // ★変更：ローディング中（通信中）ならスピナー付きで出すように調整！★
     function showToast(message, keep = false) {
       let toast = document.getElementById("toast");
       toast.innerHTML = message; 
@@ -733,17 +733,36 @@
       let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
       let kaishu = localStorage.getItem('rescueKaishuName') || "";
       
-      let data = { action: "order", name: name, phone: phone, address: address, items: itemsText, comment: comment, kaishuName: kaishu };
+      let userId = localStorage.getItem('rescueUserId');
+      let userPass = localStorage.getItem('rescueUserPass');
+      
+      let data = { 
+        action: "order", 
+        userId: userId, 
+        password: userPass, 
+        name: name, 
+        phone: phone, 
+        address: address, 
+        items: itemsText, 
+        comment: comment, 
+        kaishuName: kaishu 
+      };
 
       closeConfirm(); 
-      // ★追加：送信中にクルクルスピナーを出す！★
       showToast('<span class="spinner" style="border-top-color:#fff;"></span>送信中です…少々お待ちください。', true);
 
       fetch(gasUrl, {
         method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(data)
       })
-      .then(response => {
+      .then(response => response.json())
+      .then(data => {
         document.getElementById("toast").className = document.getElementById("toast").className.replace("show", "");
+        
+        if (data.result === "error") {
+          alert("エラーが発生しました: " + data.message);
+          return;
+        }
+        
         alert("送信が完了しました。ご依頼ありがとうございました。");
         cart = {}; 
         document.getElementById('phone').value = '';
@@ -758,12 +777,14 @@
       });
     }
 
-    // 引数で「押されたボタン」を受け取れるように微調整
-    function fetchHistory(btnElement) {
+    // ★履歴の方も賢い魔法に対応させといたで！★
+    function fetchHistory(btnElement = null) {
       showPage('history-page', btnElement); 
       
       let kaishuName = localStorage.getItem('rescueKaishuName');
-      if (!kaishuName) return;
+      let userId = localStorage.getItem('rescueUserId');
+      let userPass = localStorage.getItem('rescueUserPass');
+      if (!kaishuName || !userId || !userPass) return;
 
       document.getElementById('history-content').innerHTML = '';
       document.getElementById('history-loading').style.display = 'block';
@@ -771,12 +792,17 @@
       fetch(gasUrl, {
         method: "POST",
         headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({ action: "history", name: kaishuName })
+        body: JSON.stringify({ action: "history", userId: userId, password: userPass, name: kaishuName })
       })
       .then(res => res.json())
       .then(data => {
         document.getElementById('history-loading').style.display = 'none';
         
+        if (data.result === "error") {
+          document.getElementById('history-content').innerHTML = `<p style="color:#e53935; text-align:center;">エラー: ${data.message}</p>`;
+          return;
+        }
+
         let html = '';
         if (data.history && data.history.length > 0) {
           data.history.forEach(order => {
