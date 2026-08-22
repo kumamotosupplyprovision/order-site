@@ -1,80 +1,640 @@
-function doPost(e) {
-  var data = JSON.parse(e.postData.contents);
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('全ログ') || ss.getSheets()[0];
-  
-  var userList = {
-    "kouda28": { pass: "drc", name: "高田会衆" },
-    "kagami15": { pass: "drc", name: "鏡会衆" },
-    "uki31": { pass: "drc", name: "宇城会衆" },
-    "sample01": { pass: "drc", name: "サンプル会衆" }
-  };
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>救援物資 依頼サイト</title>
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; padding: 10px; padding-bottom: 100px; background-color: #f5f7fa; color: #2c3e50; margin: 0; }
+    
+    .header-container { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 15px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 20px; border: 1px solid rgba(0,0,0,0.02); }
+    .header-container h2 { margin: 0; font-size: 18px; cursor: pointer; color: #2c3e50; display: flex; align-items: center; font-weight: 800; letter-spacing: 1px; transition: transform 0.2s, opacity 0.2s; }
+    .header-container h2:active { transform: scale(0.98); opacity: 0.7; }
+    
+    .header-icon { background: linear-gradient(135deg, #1e88e5, #42a5f5); color: white; width: 36px; height: 36px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; margin-right: 12px; font-size: 18px; box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3); }
+    
+    .logout-btn { background: #f0f4f8; color: #5c6b7a; border: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; }
+    .logout-btn:active { transform: scale(0.95); background: #e0e4e8; color: #e53935; }
 
-  var user = userList[data.userId];
-  if (!user || user.pass !== data.password) {
-    return ContentService.createTextOutput(JSON.stringify({ "result": "error", "message": "パスワードが違うで！" })).setMimeType(ContentService.MimeType.JSON);
-  }
+    button, input, textarea { touch-action: manipulation; outline: none; font-family: inherit; }
 
-  if (data.action === "login") {
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success", "kaishuName": user.name })).setMimeType(ContentService.MimeType.JSON);
-  }
+    #login-screen { max-width: 400px; margin: 10vh auto; background: #fff; padding: 30px 20px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid rgba(0,0,0,0.02); }
+    #login-screen h3 { margin-top: 0; color: #1e88e5; font-size: 24px; margin-bottom: 10px; }
+    .error-msg { color: #e53935; font-size: 14px; margin-top: 10px; display: none; font-weight: bold; }
+    #main-app { display: none; }
 
-  if (data.action === "order") {
-    var date = new Date();
-    var name = data.name;
-    var phone = data.phone || "";
-    var address = data.address;
-    var items = data.items;
-    var comment = data.comment || "";
-    var kaishu = data.kaishuName || ""; 
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(0, 0, 0, 0.1); border-radius: 50%; border-top-color: currentColor; animation: spin 1s ease-in-out infinite; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    // ★追加：写真用の配列（H列以降に順番に入れるための箱）★
-    var imageFormulas = [];
+    .shop-layout { display: flex; flex-direction: row; gap: 12px; max-width: 1000px; margin: 0 auto; align-items: flex-start; }
+    
+    .sidebar { width: 90px; flex-shrink: 0; background: #fff; padding: 12px 6px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.04); position: sticky; top: 10px; max-height: 85vh; overflow-y: auto; border: 1px solid rgba(0,0,0,0.02); }
+    .sidebar h3 { margin-top: 0; font-size: 13px; text-align: center; margin-bottom: 12px; color: #7f8c8d; }
+    
+    .sidebar-user-box { background: #f0f4f8; padding: 10px 4px; border-radius: 12px; margin-bottom: 15px; text-align: center; font-weight: bold; color: #2c3e50; font-size: 11px; }
+    #display-kaishu-name { display: block; margin-top: 4px; font-size: 12px; color: #1976d2; word-break: break-all; }
 
-    if (data.images && data.images.length > 0) {
-      var folderIter = DriveApp.getFoldersByName("レスキュー物資画像");
-      var targetFolder = folderIter.hasNext() ? folderIter.next() : DriveApp.createFolder("レスキュー物資画像");
+    .category-btn { border: none; padding: 12px 4px; margin-bottom: 8px; width: 100%; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.3; transition: transform 0.2s ease, filter 0.2s, box-shadow 0.2s; }
+    .category-btn:active { transform: scale(0.95); filter: brightness(0.95); }
+    .category-btn.active-menu { box-shadow: inset 0 0 0 2px rgba(44, 62, 80, 0.6); filter: brightness(0.92); transform: scale(0.98); }
+    
+    .main-content { flex: 1; min-width: 0; }
+    .page { display: none; }
+    .active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .item { background: #fff; padding: 16px; margin-bottom: 15px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: space-between; }
+    .item h4 { margin-top: 0; margin-bottom: 12px; color: #2c3e50; font-size: 15px; line-height: 1.4; }
+    
+    .form-input { padding: 12px 15px; margin-top: 5px; margin-bottom: 10px; width: 100%; box-sizing: border-box; border: 2px solid #e0e4e8; border-radius: 12px; font-size: 16px; transition: border-color 0.3s, box-shadow 0.3s; background: #fafbfc; }
+    .form-input:focus { border-color: #2196f3; background: #fff; box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1); }
+    
+    .add-btn { background: linear-gradient(135deg, #fb8c00, #ffb74d); color: #fff; border: none; border-radius: 12px; padding: 12px; cursor: pointer; width: 100%; font-weight: bold; font-size: 14px; box-shadow: 0 4px 10px rgba(251, 140, 0, 0.3); transition: all 0.2s ease; }
+    .add-btn:active { transform: scale(0.96); box-shadow: 0 2px 5px rgba(251, 140, 0, 0.2); }
+    
+    .submit-btn { background: linear-gradient(135deg, #43a047, #66bb6a); color: #fff; border: none; border-radius: 12px; padding: 16px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; margin-top: 15px; box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3); transition: all 0.2s ease; }
+    .submit-btn:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(67, 160, 71, 0.2); }
 
-      for (var j = 0; j < data.images.length; j++) {
-        var imgInfo = data.images[j];
-        var blob = Utilities.newBlob(Utilities.base64Decode(imgInfo.base64), "image/jpeg", imgInfo.name + ".jpg");
-        var file = targetFolder.createFile(blob);
-        file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    .quantity-box { display: inline-flex; align-items: center; justify-content: center; background: #f0f4f8; border-radius: 30px; padding: 5px; margin-bottom: 12px; align-self: flex-start; }
+    .quantity-box button { width: 34px; height: 34px; font-size: 18px; font-weight: bold; background: #fff; color: #2c3e50; border: none; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.08); transition: transform 0.1s; display: flex; align-items: center; justify-content: center; }
+    .quantity-box button:active { transform: scale(0.9); background: #e0e4e8; }
+    .quantity-box input { width: 45px; height: 34px; text-align: center; font-size: 16px; font-weight: bold; background: transparent; border: none; margin: 0 5px; color: #2c3e50; }
 
-        // ★魔法：スプレッドシートのセルに直接画像を表示する関数を作る！★
-        var fileId = file.getId();
-        // 画像を直接シートに呼び出すための特殊なURL
-        var directUrl = "https://drive.google.com/uc?export=view&id=" + fileId;
-        imageFormulas.push('=IMAGE("' + directUrl + '")');
+    /* ★追加：カメラボタンのオサレデザイン★ */
+    .img-btn { flex-shrink: 0; width: 42px; height: 42px; background: #e0e4e8; color: #2c3e50; border: none; border-radius: 12px; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; margin-right: 8px; transition: all 0.2s ease; }
+    .img-btn:active { transform: scale(0.9); }
 
-        // 依頼した人（スマホ側）の履歴用に、文字のリンクも残しておく
-        items = items.replace(imgInfo.name, imgInfo.name + " \n[写真👀: " + file.getUrl() + "]");
+    #cart-list { list-style: none; padding: 0; margin: 0; }
+    .cart-item { display: flex; flex-direction: column; background: #fff; padding: 15px; margin-bottom: 10px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+    .cart-item-name { font-size: 15px; font-weight: bold; margin-bottom: 10px; color: #2c3e50; }
+    .cart-action-box { display: flex; align-items: center; justify-content: flex-end; background: #f0f4f8; border-radius: 30px; padding: 4px; align-self: flex-end; }
+    .cart-action-box button { width: 32px; height: 32px; font-size: 16px; margin: 0 2px; border: none; border-radius: 50%; cursor: pointer; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.08); font-weight: bold; transition: transform 0.1s; }
+    .cart-action-box button:active { transform: scale(0.9); }
+    .cart-action-box .cart-item-qty { width: 30px; text-align: center; font-weight: bold; font-size: 14px; color: #2c3e50; }
+    .cart-action-box .delete-btn { background: transparent; box-shadow: none; font-size: 18px; margin-left: 10px; } 
+
+    .floating-cart { position: fixed; bottom: 25px; right: 20px; background: linear-gradient(135deg, #e91e63, #f06292); color: white; padding: 14px 22px; border-radius: 50px; font-size: 16px; font-weight: bold; box-shadow: 0 6px 16px rgba(233, 30, 99, 0.4); cursor: pointer; z-index: 1000; transition: transform 0.2s ease; display: flex; align-items: center; gap: 8px; }
+    .floating-cart:active { transform: scale(0.95); }
+    
+    #toast { visibility: hidden; min-width: 200px; background-color: rgba(44, 62, 80, 0.95); color: #fff; text-align: center; border-radius: 30px; padding: 12px 20px; position: fixed; z-index: 2000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: bold; opacity: 0; transition: opacity 0.3s, bottom 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); backdrop-filter: blur(5px); }
+    #toast.show { visibility: visible; opacity: 1; bottom: 90px; }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 3000; align-items: center; justify-content: center; }
+    .modal-content { background: #fff; padding: 25px; border-radius: 20px; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto; }
+    .modal-content h3 { margin-top: 0; text-align: center; color: #2c3e50; font-size: 20px; border-bottom: 2px solid #f0f4f8; padding-bottom: 15px; }
+    .confirm-details { background: #f8f9fc; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; line-height: 1.6; color: #34495e; border: 1px solid #e0e4e8; }
+    .modal-btns { display: flex; gap: 12px; }
+    .modal-btns button { flex: 1; padding: 14px; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; transition: transform 0.2s; }
+    .btn-cancel { background: #e0e4e8; color: #5c6b7a; }
+    .btn-cancel:active { transform: scale(0.96); }
+    .btn-send { background: linear-gradient(135deg, #43a047, #66bb6a); color: #fff; box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3); }
+    .btn-send:active { transform: scale(0.96); box-shadow: 0 2px 6px rgba(67, 160, 71, 0.2); }
+    
+    .history-card { border-left: 6px solid #4caf50; background: #fff; padding: 16px; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); font-size: 14px; border: 1px solid rgba(0,0,0,0.02); }
+    .history-date { font-size: 12px; color: #7f8c8d; margin-bottom: 8px; font-weight: bold; }
+    .history-items { font-weight: bold; color: #2c3e50; line-height: 1.6; }
+
+    @media (min-width: 768px) {
+      body { padding: 30px; padding-bottom: 80px; }
+      .header-container { padding: 20px 30px; margin-bottom: 25px; }
+      .header-container h2 { font-size: 24px; }
+      .logout-btn { padding: 10px 18px; font-size: 14px; }
+      .shop-layout { gap: 25px; }
+      .sidebar { width: 220px; padding: 20px; top: 20px; max-height: 90vh; }
+      .sidebar h3 { font-size: 16px; text-align: left; margin-bottom: 20px; }
+      .category-btn { padding: 14px; font-size: 14px; text-align: left; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+      .item { padding: 24px; }
+      .item h4 { font-size: 18px; margin-bottom: 15px; }
+      .add-btn { padding: 14px; font-size: 16px; }
+      .quantity-box button { width: 40px; height: 40px; font-size: 20px; }
+      .quantity-box input { width: 60px; height: 40px; font-size: 18px; margin: 0 10px; }
+      .cart-item { flex-direction: row; align-items: center; padding: 20px; }
+      .cart-item-name { font-size: 16px; margin-bottom: 0; }
+      .cart-action-box { align-self: auto; padding: 6px; }
+      .floating-cart { font-size: 18px; padding: 16px 28px; bottom: 30px; right: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="login-screen">
+    <h3>🔒 ログイン</h3>
+    <p style="font-size: 14px; color: #7f8c8d; margin-bottom: 20px;">会衆ごとのIDとパスワードを入力してください。</p>
+    <input type="text" id="site-id" class="form-input" placeholder="ユーザーID (例: sample01)">
+    <input type="password" id="site-password" class="form-input" placeholder="パスワード">
+    <button class="submit-btn" style="background: linear-gradient(135deg, #1e88e5, #42a5f5); box-shadow: 0 4px 12px rgba(30, 136, 229, 0.3); margin-top: 20px;" onclick="checkPassword()">ログイン</button>
+    <p id="login-error" class="error-msg">IDまたはパスワードが間違っています。</p>
+    <p id="login-loading" class="error-msg" style="color:#1e88e5;"><span class="spinner" style="border-top-color:#1e88e5;"></span>確認中です…少々お待ちください。</p>
+  </div>
+
+  <div id="main-app">
+    <div class="header-container">
+      <h2 onclick="showPage('top-page')">
+        <span class="header-icon">📦</span>救援物資 依頼サイト
+      </h2>
+      <button class="logout-btn" onclick="logout()">ログアウト</button>
+    </div>
+    
+    <div class="shop-layout">
+      <div class="sidebar">
+        <div class="sidebar-user-box">
+          👤 <span id="display-kaishu-name">ゲスト</span>
+        </div>
+        <h3>🔍 カテゴリ</h3>
+        <button class="category-btn" style="background: #e3f2fd; color: #1565c0;" onclick="showPage('drink-page', this)">🧃 飲料</button>
+        <button class="category-btn" style="background: #efebe9; color: #4e342e;" onclick="showPage('rice-page', this)">🍚 お米</button>
+        <button class="category-btn" style="background: #fbe9e7; color: #d84315;" onclick="showPage('retort-page', this)">🍛 レトルト</button>
+        <button class="category-btn" style="background: #e8f5e9; color: #2e7d32;" onclick="showPage('pouch-page', this)">🥫 パウチ</button>
+        <button class="category-btn" style="background: #fffde7; color: #f57f17;" onclick="showPage('noodle-page', this)">🍜 麺類</button>
+        <button class="category-btn" style="background: #ede7f6; color: #4527a0;" onclick="showPage('snack-page', this)">🍪 おやつ</button>
+        <button class="category-btn" style="background: #e0f2f1; color: #00695c;" onclick="showPage('daily-page', this)">🧻 日用品</button>
+        <button class="category-btn" style="background: #eceff1; color: #455a64;" onclick="showPage('kitchen-page', this)">🥢 キッチン</button>
+        <button class="category-btn" style="background: #e0f7fa; color: #00838f; border: 1px solid #b2ebf2;" onclick="showPage('free-page', this)">💡 フリー依頼</button>
+        <hr style="border: 0; border-top: 2px dashed #e0e4e8; margin: 20px 0;">
+        <button class="category-btn" style="background: #fce4ec; color: #c2185b;" onclick="showPage('cart-page', this)">🛒 カート</button>
+        <button class="category-btn" style="background: #f5f5f5; color: #616161;" onclick="fetchHistory(this)">📜 履歴</button>
+      </div>
+
+      <div class="main-content">
+        <div id="top-page" class="page active">
+          <div class="item" style="text-align: center; padding: 40px 20px;">
+            <h3 style="margin-top:0; font-size: 18px; color: #1976d2;">ようこそ！</h3>
+            <p style="font-size: 15px; color: #5c6b7a; line-height: 1.6;">左のメニューから、必要な物資のカテゴリをお選びください。</p>
+          </div>
+        </div>
+
+        <div id="drink-page" class="page">
+          <div class="item"><h4>水2L(6本入り) - 箱</h4><div class="quantity-box"><button onclick="changeQty('qty-drink1', -1)">-</button><input type="number" id="qty-drink1" value="1" min="1"><button onclick="changeQty('qty-drink1', 1)">+</button></div><button class="add-btn" onclick="addCart('水2L(6本入り)', 'qty-drink1')">カートに追加</button></div>
+          <div class="item"><h4>水500ml(24本入り) - 箱</h4><div class="quantity-box"><button onclick="changeQty('qty-drink2', -1)">-</button><input type="number" id="qty-drink2" value="1" min="1"><button onclick="changeQty('qty-drink2', 1)">+</button></div><button class="add-btn" onclick="addCart('水500ml(24本入り)', 'qty-drink2')">カートに追加</button></div>
+          <div class="item"><h4>お茶2L(6本入り) - 箱</h4><div class="quantity-box"><button onclick="changeQty('qty-drink3', -1)">-</button><input type="number" id="qty-drink3" value="1" min="1"><button onclick="changeQty('qty-drink3', 1)">+</button></div><button class="add-btn" onclick="addCart('お茶2L(6本入り)', 'qty-drink3')">カートに追加</button></div>
+          <div class="item"><h4>お茶500ml(24本入り) - 箱</h4><div class="quantity-box"><button onclick="changeQty('qty-drink4', -1)">-</button><input type="number" id="qty-drink4" value="1" min="1"><button onclick="changeQty('qty-drink4', 1)">+</button></div><button class="add-btn" onclick="addCart('お茶500ml(24本入り)', 'qty-drink4')">カートに追加</button></div>
+        </div>
+
+        <div id="rice-page" class="page">
+          <div class="item"><h4>米 5kg - 個</h4><div class="quantity-box"><button onclick="changeQty('qty-rice1', -1)">-</button><input type="number" id="qty-rice1" value="1" min="1"><button onclick="changeQty('qty-rice1', 1)">+</button></div><button class="add-btn" onclick="addCart('米 5kg', 'qty-rice1')">カートに追加</button></div>
+          <div class="item"><h4>パックごはん - 個</h4><div class="quantity-box"><button onclick="changeQty('qty-rice4', -1)">-</button><input type="number" id="qty-rice4" value="1" min="1"><button onclick="changeQty('qty-rice4', 1)">+</button></div><button class="add-btn" onclick="addCart('パックごはん', 'qty-rice4')">カートに追加</button></div>
+        </div>
+
+        <div id="retort-page" class="page">
+          <div class="item"><h4>レンジ対応品(カレーなど) - 個</h4><div class="quantity-box"><button onclick="changeQty('qty-retort1', -1)">-</button><input type="number" id="qty-retort1" value="1" min="1"><button onclick="changeQty('qty-retort1', 1)">+</button></div><button class="add-btn" onclick="addCart('レンジ対応品', 'qty-retort1')">カートに追加</button></div>
+        </div>
+
+        <div id="pouch-page" class="page">
+          <div class="item"><h4>魚・肉パウチ - 個</h4><div class="quantity-box"><button onclick="changeQty('qty-pouch1', -1)">-</button><input type="number" id="qty-pouch1" value="1" min="1"><button onclick="changeQty('qty-pouch1', 1)">+</button></div><button class="add-btn" onclick="addCart('魚・肉パウチ', 'qty-pouch1')">カートに追加</button></div>
+        </div>
+
+        <div id="noodle-page" class="page">
+          <div class="item"><h4>カップ麺 - 個</h4><div class="quantity-box"><button onclick="changeQty('qty-noodle1', -1)">-</button><input type="number" id="qty-noodle1" value="1" min="1"><button onclick="changeQty('qty-noodle1', 1)">+</button></div><button class="add-btn" onclick="addCart('カップ麺', 'qty-noodle1')">カートに追加</button></div>
+        </div>
+
+        <div id="snack-page" class="page">
+          <div class="item"><h4>おやつ(塩系) - 個</h4><div class="quantity-box"><button onclick="changeQty('qty-snack1', -1)">-</button><input type="number" id="qty-snack1" value="1" min="1"><button onclick="changeQty('qty-snack1', 1)">+</button></div><button class="add-btn" onclick="addCart('おやつ(塩系)', 'qty-snack1')">カートに追加</button></div>
+        </div>
+
+        <div id="daily-page" class="page">
+          <div class="item"><h4>トイレットペーパー - 袋</h4><div class="quantity-box"><button onclick="changeQty('qty-daily1', -1)">-</button><input type="number" id="qty-daily1" value="1" min="1"><button onclick="changeQty('qty-daily1', 1)">+</button></div><button class="add-btn" onclick="addCart('トイレットペーパー', 'qty-daily1')">カートに追加</button></div>
+        </div>
+
+        <div id="kitchen-page" class="page">
+          <div class="item"><h4>割り箸 - 本数</h4><div class="quantity-box"><button onclick="changeQty('qty-kit1', -1)">-</button><input type="number" id="qty-kit1" value="1" min="1"><button onclick="changeQty('qty-kit1', 1)">+</button></div><button class="add-btn" onclick="addCart('割り箸', 'qty-kit1')">カートに追加</button></div>
+        </div>
+
+        <div id="free-page" class="page">
+          <div class="item" style="border: 2px solid #e0f7fa;">
+            <h3 style="margin-top:0; color: #00838f; font-size: 18px;">💡 フリー依頼</h3>
+            <p style="font-size: 13px; color: #5c6b7a; line-height: 1.6; background: #e0f7fa; padding: 10px; border-radius: 8px;">リストにない物資はこちらにご入力ください。<br>📷マークから写真を添付できます。<br>※一番下の行に入力すると自動で行が追加されます。</p>
+            
+            <div id="free-request-container" style="margin-top: 15px;">
+            </div>
+            
+            <button class="submit-btn" style="background: linear-gradient(135deg, #00acc1, #00838f); box-shadow: 0 4px 12px rgba(0, 131, 143, 0.3);" onclick="addFreeCart()">まとめてカートに追加 ＋</button>
+          </div>
+        </div>
+
+        <div id="cart-page" class="page">
+          <div class="item">
+            <h3 style="margin-top:0; color: #c2185b; border-bottom: 2px solid #fce4ec; padding-bottom: 10px;">🛒 カートの内容</h3>
+            <ul id="cart-list"></ul>
+          </div>
+          <div class="item">
+            <h3 style="margin-top:0; color: #2c3e50; border-bottom: 2px solid #f0f4f8; padding-bottom: 10px;">📝 お届け先情報</h3>
+            <input type="text" id="name" class="form-input" placeholder="担当者のお名前" oninput="saveData()">
+            <input type="tel" id="phone" class="form-input" placeholder="お電話番号" oninput="saveData()">
+            <input type="text" id="address" class="form-input" placeholder="お届け先 ご住所 or ○○王国会館など" oninput="saveData()">
+            
+            <textarea id="order-comment" class="form-input" rows="3" placeholder="依頼品や配送についてのコメントがあればこちらへどうぞ" oninput="saveData()"></textarea>
+            
+            <button class="submit-btn" onclick="showConfirm()">依頼内容を確認する</button>
+          </div>
+        </div>
+
+        <div id="history-page" class="page">
+          <div class="item">
+            <h3 style="color: #4caf50; margin-top:0; border-bottom: 2px solid #e8f5e9; padding-bottom: 10px;">📜 過去の注文履歴</h3>
+            <div id="history-loading" style="text-align: center; color: #4caf50; padding: 20px; display: none; font-weight: bold;">
+              <span class="spinner" style="border-top-color:#4caf50;"></span>履歴を検索中です…少々お待ちください。
+            </div>
+            <div id="history-content"></div>
+          </div>
+        </div>
+
+      </div> 
+    </div> 
+    <div class="floating-cart" onclick="showPage('cart-page', document.querySelector('.category-btn[onclick*=\\'cart-page\\']'))">🛒 カート (<span id="cart-count">0</span>)</div>
+  </div> 
+
+  <div id="toast">メッセージ</div>
+
+  <div id="confirm-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>以下の内容で送信しますか？</h3>
+      <div class="confirm-details" id="confirm-text"></div>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeConfirm()">キャンセル</button>
+        <button class="btn-send" onclick="executeOrder()">送信する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ★新しいGASのURLを入れたで！★
+    const gasUrl = "https://script.google.com/macros/s/AKfycby-SXpWmxiy4XpZYGweRr0V6eZEJbNNvSfq_LeG63fAGCZ1nI6djCYcVKj1JbP74pAaKA/exec"; 
+
+    let cart = {}; 
+    let cartImages = {}; 
+    let totalItems = 0;
+
+    window.onload = function() {
+      let isLoggedIn = localStorage.getItem('rescueLoggedIn');
+      let kaishuName = localStorage.getItem('rescueKaishuName');
+      
+      if (isLoggedIn === 'true' && kaishuName) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        document.getElementById('display-kaishu-name').innerText = kaishuName;
+        
+        let savedPass = localStorage.getItem('rescueUserPass');
+        if (savedPass) document.getElementById('site-password').value = savedPass;
+        let savedId = localStorage.getItem('rescueUserId');
+        if (savedId) document.getElementById('site-id').value = savedId;
+      }
+
+      let savedCart = localStorage.getItem('rescueCart');
+      if (savedCart) { cart = JSON.parse(savedCart); }
+      
+      let savedImages = localStorage.getItem('rescueCartImages');
+      if (savedImages) { cartImages = JSON.parse(savedImages); }
+      
+      let savedName = localStorage.getItem('rescueName');
+      if (savedName) document.getElementById('name').value = savedName;
+      let savedPhone = localStorage.getItem('rescuePhone');
+      if (savedPhone) document.getElementById('phone').value = savedPhone;
+      let savedAddress = localStorage.getItem('rescueAddress');
+      if (savedAddress) document.getElementById('address').value = savedAddress;
+      let savedComment = localStorage.getItem('rescueComment');
+      if (savedComment) document.getElementById('order-comment').value = savedComment;
+      
+      resetFreeRows();
+      recalcTotal(); updateCartView();
+    };
+
+    function createFreeRowHTML() {
+      return `
+        <button type="button" class="img-btn" onclick="this.nextElementSibling.click()" title="写真を添付">📷</button>
+        <input type="file" accept="image/*" style="display:none" onchange="handleImageSelect(this)">
+        <input type="hidden" class="free-img-base64" value="">
+        <input type="text" class="form-input free-name" placeholder="リクエスト品名" oninput="checkFreeRows()" style="flex:1; margin-right:5px; margin-top:0;">
+        <input type="number" class="free-qty" placeholder="数量" value="1" min="1" style="width: 60px; height: auto; padding: 12px 5px; background: #fff; border: 2px solid #e0e4e8; border-radius: 12px;">
+      `;
+    }
+
+    function resetFreeRows() {
+      let container = document.getElementById('free-request-container');
+      container.innerHTML = '';
+      for(let i=0; i<3; i++) {
+        let div = document.createElement('div');
+        div.className = 'quantity-box free-row';
+        div.style.cssText = 'justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0; align-items: center;';
+        div.innerHTML = createFreeRowHTML();
+        container.appendChild(div);
       }
     }
 
-    // A〜G列までの基本データ
-    var rowData = [date, name, phone, address, items, comment, kaishu];
-    // その後ろ（H列以降）に、写真の関数をガッチャンコ！
-    rowData = rowData.concat(imageFormulas);
-
-    sheet.appendRow(rowData);
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success" })).setMimeType(ContentService.MimeType.JSON);
-  }
-
-  if (data.action === "history") {
-    var allData = sheet.getDataRange().getDisplayValues();
-    var historyList = [];
-    for (var i = 0; i < allData.length; i++) {
-      var colB = allData[i][1]; 
-      var colG = allData[i].length > 6 ? allData[i][6] : ""; 
-
-      if (colB === data.name || colG === data.name) {
-        var itemData = allData[i][4]; 
-        if (!itemData || itemData === "") { itemData = allData[i][3]; }
-        historyList.push({ date: allData[i][0], items: itemData });
+    function checkFreeRows() {
+      let names = document.querySelectorAll('.free-name');
+      let lastInput = names[names.length - 1];
+      if (lastInput.value.trim() !== '') {
+        let container = document.getElementById('free-request-container');
+        let div = document.createElement('div');
+        div.className = 'quantity-box free-row';
+        div.style.cssText = 'justify-content: flex-start; width: 100%; box-sizing: border-box; background: transparent; padding: 0; align-items: center;';
+        div.innerHTML = createFreeRowHTML();
+        container.appendChild(div);
       }
     }
-    historyList.reverse();
-    return ContentService.createTextOutput(JSON.stringify({ "result": "success", "history": historyList })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
+
+    function handleImageSelect(input) {
+      if (!input.files || !input.files[0]) return;
+      let file = input.files[0];
+      let reader = new FileReader();
+      
+      reader.onload = function(e) {
+        let img = new Image();
+        img.onload = function() {
+          let canvas = document.createElement('canvas');
+          let ctx = canvas.getContext('2d');
+          let maxW = 800; let maxH = 800;
+          let w = img.width; let h = img.height;
+          if (w > maxW || h > maxH) {
+            if (w > h) { h *= maxW/w; w = maxW; } else { w *= maxH/h; h = maxH; }
+          }
+          canvas.width = w; canvas.height = h;
+          ctx.drawImage(img, 0, 0, w, h);
+          
+          let base64 = canvas.toDataURL('image/jpeg', 0.8);
+          let rawBase64 = base64.split(',')[1]; 
+          
+          input.parentElement.querySelector('.free-img-base64').value = rawBase64;
+          
+          let btn = input.parentElement.querySelector('.img-btn');
+          btn.innerHTML = '✅';
+          btn.style.background = '#4caf50';
+          btn.style.color = '#fff';
+        }
+        img.src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    }
+
+    function addFreeCart() {
+      let added = false;
+      let rows = document.querySelectorAll('.free-row');
+
+      rows.forEach(row => {
+        let fn = row.querySelector('.free-name').value.trim();
+        let fq = parseInt(row.querySelector('.free-qty').value) || 1;
+        let imgBase64 = row.querySelector('.free-img-base64').value;
+        
+        if (fn !== '') {
+          let itemName = fn + " (フリー依頼)";
+          cart[itemName] = (cart[itemName] || 0) + fq;
+          
+          if (imgBase64) {
+            cartImages[itemName] = imgBase64;
+          }
+          added = true;
+        }
+      });
+
+      if (added) {
+        recalcTotal(); updateCartView(); saveData();
+        showToast("フリー依頼をカートに追加しました。");
+        resetFreeRows(); 
+      } else {
+        alert("リクエスト品名を入力してください。");
+      }
+    }
+
+    function checkPassword() {
+      let inputId = document.getElementById('site-id').value;
+      let inputPass = document.getElementById('site-password').value;
+      
+      if (!inputId || !inputPass) { alert("IDとパスワードの両方を入力してください。"); return; }
+      document.getElementById('login-error').style.display = 'none';
+      document.getElementById('login-loading').style.display = 'block';
+
+      fetch(gasUrl, {
+        method: "POST", headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "login", userId: inputId, password: inputPass })
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('login-loading').style.display = 'none';
+        if (data.result === "success") {
+          localStorage.setItem('rescueLoggedIn', 'true');
+          localStorage.setItem('rescueKaishuName', data.kaishuName);
+          localStorage.setItem('rescueUserId', inputId);
+          localStorage.setItem('rescueUserPass', inputPass);
+          
+          document.getElementById('display-kaishu-name').innerText = data.kaishuName;
+          saveData();
+          document.getElementById('login-screen').style.display = 'none';
+          document.getElementById('main-app').style.display = 'block';
+        } else {
+          document.getElementById('login-error').innerText = data.message || "IDまたはパスワードが間違っています。";
+          document.getElementById('login-error').style.display = 'block';
+        }
+      })
+      .catch(error => {
+        document.getElementById('login-loading').style.display = 'none';
+        alert("通信エラーが発生しました。");
+      });
+    }
+
+    function logout() {
+      if(confirm("ログアウトしますか？\n※カートの中身や入力内容もリセットされます。")) {
+        localStorage.clear();
+        cart = {}; cartImages = {}; totalItems = 0;
+        updateCartView(); resetFreeRows();
+        document.getElementById('name').value = '';
+        document.getElementById('phone').value = '';
+        document.getElementById('address').value = '';
+        document.getElementById('order-comment').value = '';
+        document.getElementById('site-id').value = '';
+        document.getElementById('site-password').value = '';
+        document.getElementById('main-app').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'block';
+        showPage('top-page');
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('rescueCart', JSON.stringify(cart));
+      localStorage.setItem('rescueCartImages', JSON.stringify(cartImages));
+      localStorage.setItem('rescueName', document.getElementById('name').value);
+      localStorage.setItem('rescuePhone', document.getElementById('phone').value);
+      localStorage.setItem('rescueAddress', document.getElementById('address').value);
+      localStorage.setItem('rescueComment', document.getElementById('order-comment').value);
+    }
+
+    function showPage(pageId, btnElement = null) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      window.scrollTo(0, 0); 
+      document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active-menu'));
+      
+      if (btnElement) {
+        btnElement.classList.add('active-menu');
+      } else {
+        let targetBtn = Array.from(document.querySelectorAll('.category-btn')).find(btn => btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(pageId));
+        if(targetBtn) targetBtn.classList.add('active-menu');
+      }
+    }
+
+    function changeQty(inputId, amount) {
+      let input = document.getElementById(inputId);
+      let newVal = (parseInt(input.value) || 0) + amount;
+      input.value = newVal < 1 ? 1 : newVal;
+    }
+
+    function showToast(message, keep = false) {
+      let toast = document.getElementById("toast");
+      toast.innerHTML = message; toast.className = "show"; 
+      if (!keep) setTimeout(() => toast.className = toast.className.replace("show", ""), 1500);
+    }
+
+    function addCart(itemName, inputId) {
+      let qty = parseInt(document.getElementById(inputId).value) || 1;
+      cart[itemName] = (cart[itemName] || 0) + qty;
+      recalcTotal(); updateCartView(); saveData(); 
+      showToast(itemName + " を " + qty + "個 カートに追加しました。");
+      document.getElementById(inputId).value = 1;
+    }
+
+    function changeCartQty(itemName, amount) {
+      if (cart[itemName] + amount < 1) return; 
+      cart[itemName] += amount; recalcTotal(); updateCartView(); saveData(); 
+    }
+
+    function removeFromCart(itemName) { 
+      delete cart[itemName]; 
+      delete cartImages[itemName]; 
+      recalcTotal(); updateCartView(); saveData(); 
+    }
+    
+    function recalcTotal() { totalItems = Object.values(cart).reduce((a, b) => a + b, 0); }
+
+    function updateCartView() {
+      document.getElementById('cart-count').innerText = totalItems;
+      let list = document.getElementById('cart-list'); list.innerHTML = '';
+      if (Object.keys(cart).length === 0) { list.innerHTML = 'まだ何も選択されていません。'; return; }
+      for (let item in cart) {
+        let iconHtml = cartImages[item] ? '<span style="color:#4caf50; margin-left:5px;" title="写真あり">📷</span>' : '';
+        list.innerHTML += `<li class="cart-item"><span class="cart-item-name">${item}${iconHtml}</span><div class="cart-action-box"><button onclick="changeCartQty('${item}', -1)">-</button><span class="cart-item-qty">${cart[item]}</span><button onclick="changeCartQty('${item}', 1)">+</button><button class="delete-btn" onclick="removeFromCart('${item}')">🗑️</button></div></li>`;
+      }
+    }
+
+    function showConfirm() {
+      let name = document.getElementById('name').value;
+      let phone = document.getElementById('phone').value;
+      let address = document.getElementById('address').value;
+      let comment = document.getElementById('order-comment').value;
+      
+      if (!name || !phone || !address || totalItems === 0) { 
+        alert("お名前、お電話番号、お届け先を入力し、物資を1つ以上選択してください。"); return; 
+      }
+      
+      let itemsText = Object.keys(cart).map(item => {
+        let iconHtml = cartImages[item] ? ' 📷(写真添付あり)' : '';
+        return `・${item} : ${cart[item]}個${iconHtml}`;
+      }).join('<br>');
+      
+      let commentHtml = comment ? `<br><strong>💬 コメント：</strong><br>${comment.replace(/\n/g, '<br>')}` : '';
+
+      document.getElementById('confirm-text').innerHTML = `
+        <strong>👤 お名前：</strong> ${name}<br>
+        <strong>📞 ご連絡先：</strong> ${phone}<br>
+        <strong>🏠 お届け先：</strong> ${address}<br><br>
+        <strong>📦 ご依頼の物資：</strong><br>${itemsText}
+        ${commentHtml}
+      `;
+      document.getElementById('confirm-modal').style.display = 'flex';
+    }
+
+    function closeConfirm() { document.getElementById('confirm-modal').style.display = 'none'; }
+
+    function executeOrder() {
+      let name = document.getElementById('name').value;
+      let phone = document.getElementById('phone').value;
+      let address = document.getElementById('address').value;
+      let comment = document.getElementById('order-comment').value;
+      
+      let itemsText = Object.entries(cart).map(([item, qty]) => `${item}(${qty})`).join(' ');
+      let kaishu = localStorage.getItem('rescueKaishuName') || "";
+      let userId = localStorage.getItem('rescueUserId');
+      let userPass = localStorage.getItem('rescueUserPass');
+      
+      let imagesArray = [];
+      for (let item in cartImages) {
+        imagesArray.push({
+          name: item,
+          base64: cartImages[item]
+        });
+      }
+      
+      let data = { 
+        action: "order", userId: userId, password: userPass, name: name, 
+        phone: phone, address: address, items: itemsText, comment: comment, 
+        kaishuName: kaishu,
+        images: imagesArray
+      };
+
+      closeConfirm(); 
+      showToast('<span class="spinner" style="border-top-color:#fff;"></span>写真を送信中です…少々お待ちください。', true);
+
+      fetch(gasUrl, {
+        method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("toast").className = document.getElementById("toast").className.replace("show", "");
+        if (data.result === "error") { alert("エラー: " + data.message); return; }
+        
+        alert("送信が完了しました。ご依頼ありがとうございました。");
+        cart = {}; cartImages = {}; 
+        document.getElementById('phone').value = '';
+        document.getElementById('address').value = '';
+        document.getElementById('order-comment').value = '';
+        
+        saveData(); recalcTotal(); updateCartView(); showPage('top-page'); 
+      })
+      .catch(error => { 
+        document.getElementById("toast").className = document.getElementById("toast").className.replace("show", "");
+        alert("通信エラーが発生しました。"); 
+      });
+    }
+
+    function fetchHistory(btnElement = null) {
+      showPage('history-page', btnElement); 
+      let kaishuName = localStorage.getItem('rescueKaishuName');
+      let userId = localStorage.getItem('rescueUserId');
+      let userPass = localStorage.getItem('rescueUserPass');
+      if (!kaishuName || !userId || !userPass) return;
+
+      document.getElementById('history-content').innerHTML = '';
+      document.getElementById('history-loading').style.display = 'block';
+
+      fetch(gasUrl, {
+        method: "POST", headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "history", userId: userId, password: userPass, name: kaishuName })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('history-loading').style.display = 'none';
+        if (data.result === "error") { document.getElementById('history-content').innerHTML = `<p style="color:#e53935; text-align:center;">エラー: ${data.message}</p>`; return; }
+
+        let html = '';
+        if (data.history && data.history.length > 0) {
+          data.history.forEach(order => {
+            let formattedItems = order.items.replace(/\[写真👀: (https:\/\/drive\.google\.com\/[^\s\]]+)\]/g, '<br><a href="$1" target="_blank" style="color:#1e88e5; text-decoration:none; display:inline-block; margin-top:5px;">🖼️ 添付写真を見る</a>');
+            
+            html += `
+              <div class="history-card">
+                <div class="history-date">📅 ${order.date}</div>
+                <div class="history-items">${formattedItems}</div>
+              </div>
+            `;
+          });
+        } else {
+          html = '<p style="text-align:center; color:#7f8c8d;">まだ注文履歴はありません。📦</p>';
+        }
+        document.getElementById('history-content').innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById('history-loading').style.display = 'none';
+        document.getElementById('history-content').innerHTML = '<p style="color:#e53935; text-align:center;">履歴の取得に失敗しました。</p>';
+      });
+    }
+  </script>
+</body>
+</html>
